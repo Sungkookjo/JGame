@@ -29,7 +29,6 @@ namespace JGame.Pool
             {
                 obj.name = "Object Pool";
                 _instance = obj.AddComponent<ObjectPoolManager>();
-                DontDestroyOnLoad(obj);
             }
         }
 
