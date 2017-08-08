@@ -21,7 +21,7 @@ namespace JGame.Pool
         // Create Instance
         protected static void CreateInstance()
         {
-            if (instance != null) return;
+            if (_instance != null) return;
 
             GameObject obj = new GameObject();
 
@@ -34,7 +34,22 @@ namespace JGame.Pool
         }
 
         // get object from object pool
-        protected GameObject Pop(GameObject keyObject)
+        public GameObject Pop(GameObject keyObject,Vector3 pos)
+        {
+            GameObject obj = Pop(keyObject);
+            obj.transform.position = pos;
+            return obj;
+        }
+
+        public GameObject Pop(GameObject keyObject, Vector3 pos, Quaternion rot)
+        {
+            GameObject obj = Pop(keyObject);
+            obj.transform.position = pos;
+            obj.transform.rotation = rot;
+            return obj;
+        }
+
+        public GameObject Pop(GameObject keyObject)
         {
             int key = keyObject.GetInstanceID();
             GameObject obj = null;
@@ -84,7 +99,7 @@ namespace JGame.Pool
         }
 
         // push object to pool
-        protected void Push(GameObject obj)
+        public void Push(GameObject obj)
         {
             PoolObject po = obj.GetComponent<PoolObject>();
 

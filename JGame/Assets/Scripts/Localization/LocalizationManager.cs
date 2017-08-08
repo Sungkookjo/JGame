@@ -39,7 +39,7 @@ namespace JGame.Localization
         
         protected static void CreateInstance()
         {
-            if (instance != null) return;
+            if (_instance != null) return;
 
             GameObject obj = new GameObject();
 

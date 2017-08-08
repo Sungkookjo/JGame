@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace JGame.Pool
 {
-    public class PoolObject : Component
+    public class PoolObject : MonoBehaviour
     {
-        // key from objectPoolManager. ( prefap )
+        // key from objectPoolManager. ( prefab )
         public GameObject keyObj = null;
 
         // instantiated
