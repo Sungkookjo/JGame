@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 using JGame.Pool;
+using JGame.Data;
 
-namespace JGame.Map
+namespace JGame
 {
     [System.Serializable]
     public class MapData
@@ -25,7 +27,7 @@ namespace JGame.Map
         public IntRect tileNum;
 
         // scale
-        public Vector2 tileSize;
+        public Vector2 tileSize = new Vector2(1.4142f, 1.4142f);
         
         // x spacing
         public Vector3 tileSpacingX = new Vector3(0, 0, 0);
@@ -42,10 +44,16 @@ namespace JGame.Map
         // Use this for initialization
         void Start()
         {
-            Initialize();
         }
 
         // initialize
+        public void Initialize(string dataPath)
+        {
+            MapData data = DataController.LoadJson<MapData>(dataPath); 
+
+            Initialize(data);
+        }
+
         public void Initialize(MapData newData)
         {
             tiles.Clear();
@@ -89,43 +97,13 @@ namespace JGame.Map
 
                     tile.position.x = x;
                     tile.position.y = y;
+
+                    tiles.Add(obj);
                 }
             }
         }
 
-        // initialize
-        void Initialize()
-        {
-            tiles.Clear();
-
-            for (int y = 0; y < tileNum.y; ++y)
-            {
-                for( int x =0;x<tileNum.x;++x)
-                {
-                    var i = Random.Range(0, tilePrefabs.Count );
-
-                    var obj = ObjectPoolManager.instance.Pop(tilePrefabs[i]);
-
-                    if( obj == null )
-                    {
-                        Debug.LogError("obj == null.");
-                    }
-
-                    // set game object properties
-                    obj.name = "tile" + y + "," + x; // name
-                    obj.transform.SetParent(transform); // parent
-                    obj.transform.position = transform.position + (tileSpacingX * x) + (tileSpacingY * y); // position
-                    obj.transform.Rotate(0, 0, 45.0f); // rotation
-                    obj.transform.localScale = tileSize; // scale
-
-                    var tile = obj.GetComponent<Tile>();
-
-                    tile.position.x = x;
-                    tile.position.y = y;
-                }
-            }
-        }
-
+        // get tile
         public Tile GetTile(int x, int y)
         {
             if( x < 0 || y < 0 || x >= tileNum.x || y > tileNum.y )

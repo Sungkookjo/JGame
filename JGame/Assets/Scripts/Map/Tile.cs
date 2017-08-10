@@ -2,10 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace JGame.Map
+namespace JGame
 {
     public class Tile : MonoBehaviour
     {
+        // tile index (x,y)
         public IntRect position;
+
+        // actor on tile
+        protected GameObject actor;
+        
     }
 }

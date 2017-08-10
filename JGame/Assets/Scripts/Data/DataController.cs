@@ -58,6 +58,7 @@ namespace JGame.Data
             SetFloatData(Config.key_DataVersion, version);
         }
 
+        // initialize
         protected void Initialize()
         {
             //@Test
@@ -74,6 +75,28 @@ namespace JGame.Data
             }
         }
 
+        // load Json data
+        public static T LoadJson<T>(string path) where T : class
+        {
+            TextAsset targetFile = Resources.Load<TextAsset>(path);
+
+            T data = null;
+
+            if (targetFile != null)
+            {
+                string dataAsJson = targetFile.text;
+
+                data = JsonUtility.FromJson<T>(dataAsJson);
+            }
+            else
+            {
+                Debug.LogError("Cannot find data file!");
+            }
+
+            return data;
+        }
+
+        // get local country
         public string GetCountry()
         {
             if (!PlayerPrefs.HasKey(Config.key_Country))

@@ -74,7 +74,7 @@ namespace JGame.Pool
                 if (obj != null)
                 {
                     // add pool object
-                    PoolObject po = obj.AddComponent<PoolObject>();
+                    PoolObject po = AddPoolObjectComponent(obj);
                     if (po != null)
                     {
                         po.keyObj = keyObject;
@@ -131,6 +131,19 @@ namespace JGame.Pool
 
             // push
             pool[key].Enqueue(obj);
+        }
+
+        // add pool object component
+        protected PoolObject AddPoolObjectComponent(GameObject obj)
+        {
+            var actorComp = obj.GetComponent<Actor>();
+
+            if( actorComp != null )
+            {
+                return obj.AddComponent<PoolObject_Actor>();
+            }
+
+            return obj.AddComponent<PoolObject>();
         }
     }
 }

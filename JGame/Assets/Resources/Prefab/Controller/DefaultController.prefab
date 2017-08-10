@@ -9,56 +9,45 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1852814091213156}
+  m_RootGameObject: {fileID: 1616948523508380}
   m_IsPrefabParent: 1
---- !u!1 &1852814091213156
+--- !u!1 &1616948523508380
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 4935098829893732}
-  - component: {fileID: 114770390706736872}
+  - component: {fileID: 4960161849864220}
+  - component: {fileID: 114366359046949260}
   m_Layer: 0
-  m_Name: Map
+  m_Name: DefaultController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4935098829893732
+--- !u!4 &4960161849864220
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1852814091213156}
+  m_GameObject: {fileID: 1616948523508380}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 5, z: 0}
+  m_LocalPosition: {x: 61.524605, y: 80.20614, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114770390706736872
+--- !u!114 &114366359046949260
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1852814091213156}
+  m_GameObject: {fileID: 1616948523508380}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e8f8ab3ee4cff446aedfbfcb9cfdee4, type: 3}
+  m_Script: {fileID: 11500000, guid: 064f6b5ae454caf419182d4c3dbda03d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileNum:
-    x: 16
-    y: 16
-  tileSize: {x: 1.4142, y: 1.4142}
-  tileSpacingX: {x: 0.32, y: -0.32, z: 0}
-  tileSpacingY: {x: -0.32, y: -0.32, z: 0}
-  tilePrefabs:
-  - {fileID: 1116497233825974, guid: f6d6a8d88a27cf84281141e501ddf124, type: 2}
-  - {fileID: 1912566406630660, guid: 69d79d96934d35f42b20c3e633fa355f, type: 2}
-  - {fileID: 1472570809431320, guid: cc25d2227e07c524d8339c2669b6d064, type: 2}
-  tiles: []

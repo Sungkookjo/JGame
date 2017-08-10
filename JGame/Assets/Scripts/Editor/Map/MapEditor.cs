@@ -2,7 +2,7 @@
 using UnityEditor;
 using System.IO;
 
-namespace JGame.Map
+namespace JGame
 {
     public class MapEditor : EditorWindow
     {

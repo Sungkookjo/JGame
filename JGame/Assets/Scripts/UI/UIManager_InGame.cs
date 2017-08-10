@@ -4,11 +4,8 @@ using UnityEngine;
 
 namespace JGame
 {
-    public class Camera : MonoBehaviour
+    public class UIManager_InGame : UIManager
     {
-        // camera size min max. only Orthographic
-        public Vector2 sizeRange = new Vector2(1.0f, 5.0f);
-
         // Use this for initialization
         void Start()
         {

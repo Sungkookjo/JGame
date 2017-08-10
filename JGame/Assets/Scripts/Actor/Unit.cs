@@ -4,10 +4,13 @@ using UnityEngine;
 
 namespace JGame
 {
-    public class Camera : MonoBehaviour
+    public class Unit : Actor
     {
-        // camera size min max. only Orthographic
-        public Vector2 sizeRange = new Vector2(1.0f, 5.0f);
+        protected bool _isDead;
+        public bool isDead { get { return _isDead; } }
+        protected int health = 0;
+        protected int attack = 0;
+        protected int defence = 0;
 
         // Use this for initialization
         void Start()

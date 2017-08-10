@@ -55,32 +55,22 @@ namespace JGame.Localization
         // Initialize
         public void Initialize()
         {
-            LoadLocalizedText(GetCountry());
+            LoadLocalizedText("Localization/"+GetCountry());
         }
 
         // load localization data file
         public void LoadLocalizedText(string fileName)
         {
-            localizedText = new Dictionary<string, string>();
-            string filePath = "Localization/" + fileName;
+            LocalizationData loadedData = DataController.LoadJson<LocalizationData>(fileName);
 
-            // load data file in resource folder
-            TextAsset targetFile = Resources.Load<TextAsset>(filePath);
-
-            if (targetFile != null)
+            if( loadedData != null )
             {
-                string dataAsJson = targetFile.text;
-
-                LocalizationData loadedData = JsonUtility.FromJson<LocalizationData>(dataAsJson);
+                localizedText = new Dictionary<string, string>();
 
                 for (int i = 0; i < loadedData.items.Length; i++)
                 {
                     localizedText.Add(loadedData.items[i].key, loadedData.items[i].value);
                 }
-            }
-            else
-            {
-                Debug.LogError("Cannot find localization data file!");
             }
 
             isReady = true;
