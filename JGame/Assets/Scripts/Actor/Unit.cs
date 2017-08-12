@@ -6,22 +6,21 @@ namespace JGame
 {
     public class Unit : Actor
     {
+        // is dead?
         protected bool _isDead;
         public bool isDead { get { return _isDead; } }
-        protected int health = 0;
-        protected int attack = 0;
-        protected int defence = 0;
 
-        // Use this for initialization
-        void Start()
+        // health
+        public int health = 0;
+        protected int healthMax = 0;
+
+        // attribute
+        public int attack = 0;
+        public int defence = 0;
+
+        private void Awake()
         {
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
+            healthMax = health;
         }
     }
 }

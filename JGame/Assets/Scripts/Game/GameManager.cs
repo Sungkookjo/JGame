@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using JGame.Pool;
+using JGame.Data;
 
 namespace JGame
 {
@@ -18,12 +19,6 @@ namespace JGame
     public class GameManager : MonoBehaviour
     {
         GameInfo gameInfo = null;
-
-        // {{ @Test
-        // controller prefab
-        GameObject defaultController = null;
-        GameObject defaultHero = null;
-        // }} @Test
 
         public Map map;
 
@@ -109,15 +104,7 @@ namespace JGame
                 CreateTeam(i);
             }
             yield return null;
-
-            // {{ @Test
-            // Create Controllers
-            if (defaultController == null)
-            {
-                defaultController = Resources.Load<GameObject>(Config.defaultControllerPath);
-            }
-            // }} @Test
-
+            
             // one team = one controller
             for ( int i =0; i< gameInfo.teamNum ; ++i)
             {
@@ -129,11 +116,7 @@ namespace JGame
             yield return null;
 
             // Create Hero
-            // {{ @test
-            if (defaultHero == null)
-            {
-                defaultHero = Resources.Load<GameObject>(Config.defaultHeroPath);
-            }
+            // {{ @test            
             for ( int j = 0; j<2;++j)
             {
                 for (int i = 0; i < 4; ++i)
@@ -152,7 +135,7 @@ namespace JGame
         // create new controller
         protected Controller CreateController( int teamIndex)
         {
-            GameObject Obj = ObjectPoolManager.instance.Pop(defaultController);
+            GameObject Obj = ObjectPoolManager.instance.Pop( DataController.instance.GetDefaultController() );
 
             Obj.name = "Controller_" + teamIndex;
 
@@ -171,14 +154,21 @@ namespace JGame
 
             if (sp == null) return;
 
-            GameObject Obj = ObjectPoolManager.instance.Pop(defaultHero, sp.transform.position);
+            GameObject Obj = ObjectPoolManager.instance.Pop( DataController.instance.GetDefaultHero() , sp.transform.position);
 
             Obj.name = "hero_" + index;
 
             var hero = Obj.GetComponent<Hero>();
 
+            
             hero.SetOwner(owner);
             hero.SetPosition(sp.position);
+
+            // {{ @Test
+            HeroInfo info = new HeroInfo();
+            info.name = "name" + Obj.name;
+            // }} @Test
+            hero.InitializeFromInfo(info);
         }
 
         // get spawn point
@@ -249,6 +239,14 @@ namespace JGame
         // Game Update
         IEnumerator UpdateGame()
         {
+            // wait data controller initialize
+            while( !DataController.instance.isReady )
+            {
+                yield return null;
+            }
+
+            //yield return new WaitForSeconds(0.1f);
+
             // wait initialize
             while( !isInitialized )
             {

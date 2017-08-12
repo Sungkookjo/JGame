@@ -3,9 +3,7 @@ namespace JGame
 {
     public class Config
     {
-        // default path
-        public const string defaultControllerPath = "Prefab/Controller/DefaultController";
-        public const string defaultHeroPath = "Prefab/Units/DefaultHero";
+        public const int MaxSoldierNum = 9; // 3x3
 
         // Team Index
         public const int teamNone = 255;

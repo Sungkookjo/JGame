@@ -195,6 +195,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   map: {fileID: 53243597}
   allController: []
+  curTurn: 0
   isInitialized: 0
 --- !u!4 &785201025
 Transform:

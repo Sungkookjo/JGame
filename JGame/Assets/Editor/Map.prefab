@@ -54,9 +54,9 @@ MonoBehaviour:
   tileNum:
     x: 16
     y: 16
-  tileSize: {x: 1.4142, y: 1.4142}
-  tileSpacingX: {x: 0.32, y: -0.32, z: 0}
-  tileSpacingY: {x: -0.32, y: -0.32, z: 0}
+  tileSize: {x: 5.6568, y: 5.6568}
+  tileSpacingX: {x: 1.28, y: -1.28, z: 0}
+  tileSpacingY: {x: -1.28, y: -1.28, z: 0}
   tilePrefabs:
   - {fileID: 1116497233825974, guid: f6d6a8d88a27cf84281141e501ddf124, type: 2}
   - {fileID: 1912566406630660, guid: 69d79d96934d35f42b20c3e633fa355f, type: 2}

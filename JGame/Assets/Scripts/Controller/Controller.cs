@@ -12,23 +12,6 @@ namespace JGame
         // is auto?
         public bool isAuto = false;
 
-        private void Awake()
-        {
-            GameManager.instance.allController.Add(this);
-        }
-
-        // Use this for initialization
-        void Start()
-        {
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
-
         // change team
         public override void SetTeam( Team newTeam )
         {
@@ -65,6 +48,22 @@ namespace JGame
         // end turn
         public void EndTurn()
         {
+        }
+
+        // Re Use
+        public override void OnPoolReuse()
+        {
+            GameManager.instance.allController.Add(this);
+
+            base.OnPoolReuse();
+        }
+
+        // Release
+        public override void OnPoolReleased()
+        {
+            GameManager.instance.allController.Remove(this);
+
+            base.OnPoolReleased();
         }
     }
 }

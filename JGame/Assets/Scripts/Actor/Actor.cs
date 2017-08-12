@@ -7,30 +7,7 @@ namespace JGame
     public class Actor : MonoBehaviour
     {
         [HideInInspector]
-        public Team team = null;
-
-        public IntRect position = new IntRect();
-
-        // Use this for initialization
-        void Start()
-        {
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
-
-        // set position
-        public void SetPosition(IntRect pos)
-        {
-            Map.instance.LeaveFrom(position, gameObject);
-            position.x = pos.x;
-            position.y = pos.y;
-            Map.instance.MoveTo(position, gameObject);
-        }
+        public Team team = null;        
 
         // SetTeam
         public virtual void SetTeam( Team newTeam )

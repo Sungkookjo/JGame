@@ -1,11 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using JGame.Pool;
 
 namespace JGame.Data
 {
     public class DataController : MonoBehaviour
     {
+        // default prefabs
+        protected static GameObject defaultController;
+        protected static GameObject defaultHero;
+        protected static Dictionary<int, GameObject> defaultSoldiers = new Dictionary<int, GameObject>();
+
         // data version
         const float version = 1.0f;
 
@@ -21,6 +27,9 @@ namespace JGame.Data
             }
         }
 
+        public bool isReady = false;
+
+        // create instance
         protected static void CreateInstance()
         {
             if (_instance != null) return;
@@ -73,6 +82,24 @@ namespace JGame.Data
             {
                 UpdateOldData();
             }
+
+            // get default controller
+            if( defaultController == null )
+            {
+                defaultController = CreateDataObject<Controller>();
+            }
+
+            // get default hero
+            if( defaultHero == null )
+            {
+                defaultHero = CreateDataObject<Hero>();
+            }
+
+            // {{ @Test
+            defaultSoldiers.Add(0,Resources.Load<GameObject>("Prefab/Units/SwordMan"));
+            // }} @Test
+
+            isReady = true;
         }
 
         // load Json data
@@ -96,6 +123,23 @@ namespace JGame.Data
             return data;
         }
 
+        // create default game object
+        public static GameObject CreateDataObject<T>() where T : MonoBehaviour
+        {
+            var obj = new GameObject();
+
+            obj.AddComponent<T>();
+
+            DontDestroyOnLoad(obj);
+
+            obj.transform.SetParent( instance.transform );
+            obj.name = typeof(T).Name;
+
+            obj.SetActive(false);
+
+            return obj;
+        }
+
         // get local country
         public string GetCountry()
         {
@@ -115,7 +159,82 @@ namespace JGame.Data
             }
             return GetStrData(Config.key_Country, "Kor");
         }
-        
+
+        #region HeroInfo
+        public void DeleteHeroInfo(int index)
+        {
+            string HeroTag = "Hero_" + index;
+
+            SetIntData(HeroTag, 0);
+        }
+
+        public void SetHeroInfo(HeroInfo info, int index)
+        {
+            string HeroTag = "Hero_" + index;
+
+            SetIntData(HeroTag, 1);
+            SetStrData(HeroTag + "_name", info.name);
+
+            for (int i = 0; i < info.soldiers.Length; ++i)
+            {
+                SetIntData(HeroTag + "_Soldier_" + i, info.soldiers[i]);
+            }
+        }
+
+        public HeroInfo GetHeroInfo(int index)
+        {
+            string HeroTag = "Hero_" + index;
+
+            // has valid data?
+            if (GetIntData(HeroTag, 0) == 0) return null;
+
+            HeroInfo info = new HeroInfo();
+
+            info.name = GetStrData(HeroTag + "_name");
+
+            for (int i = 0; i < info.soldiers.Length; ++i)
+            {
+                info.soldiers[i] = GetIntData(HeroTag + "_Soldier_" + i);
+            }
+
+            return info;
+        }
+        #endregion // heroInfo
+
+        public GameObject GetDefaultController()
+        {
+            return defaultController;
+        }
+
+        public GameObject GetDefaultHero()
+        {
+            return defaultHero;
+        }
+
+        #region Soldiers
+        public static Soldier CreateSoliderById( int id )
+        {
+            // if has id
+            if (!defaultSoldiers.ContainsKey(id)) return null;
+
+            // get prob
+            GameObject defaultProb = defaultSoldiers[id];
+
+            if( defaultProb != null )
+            {
+                // create new
+                var obj = ObjectPoolManager.instance.Pop(defaultProb);
+
+                if( obj != null )
+                {
+                    return obj.GetComponent<Soldier>();
+                }
+            }
+
+            return null;
+        }
+        #endregion // soldiers
+
         #region get/set int,float,string data
         public string GetStrData(string key, string defaultValue = "")
         {
