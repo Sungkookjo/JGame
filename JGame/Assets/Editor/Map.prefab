@@ -61,4 +61,7 @@ MonoBehaviour:
   - {fileID: 1116497233825974, guid: f6d6a8d88a27cf84281141e501ddf124, type: 2}
   - {fileID: 1912566406630660, guid: 69d79d96934d35f42b20c3e633fa355f, type: 2}
   - {fileID: 1472570809431320, guid: cc25d2227e07c524d8339c2669b6d064, type: 2}
+  spawnPointPrefab: {fileID: 1153540091690612, guid: 0c6ef07344fdbc041b2f02f0bfee67d5,
+    type: 2}
   tiles: []
+  spawnPoints: []

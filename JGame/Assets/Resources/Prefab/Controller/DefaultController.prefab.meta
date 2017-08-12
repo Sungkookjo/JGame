@@ -1,5 +1,7 @@
 fileFormatVersion: 2
 guid: 507aa570ccbe5c44eb06a0b5929596f1
+labels:
+- Prop
 timeCreated: 1502403517
 licenseType: Free
 NativeFormatImporter:

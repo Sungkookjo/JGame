@@ -11,7 +11,16 @@ namespace JGame
     {
         public int tileX;
         public int tileY;
+        public SpawnData[] SpawnPoints;
         public int[] datas;
+    }
+
+    [System.Serializable]
+    public class SpawnData
+    {
+        public int tileX;
+        public int tileY;
+        public int teamIndex;
     }
 
     [System.Serializable]
@@ -36,10 +45,31 @@ namespace JGame
 
         // tile prefab
         public List<GameObject> tilePrefabs = new List<GameObject>();
+        public GameObject spawnPointPrefab = null;
 
         [HideInInspector]
         // created tiles
-        public List<GameObject> tiles = new List<GameObject>();
+        public List<Tile> tiles = new List<Tile>();
+        public List<SpawnPoint> spawnPoints = new List<SpawnPoint>();
+
+        // instance
+        private static Map _instance = null;
+        public static Map instance
+        {
+            get
+            {
+                return _instance;
+            }
+        }
+
+        // Awake
+        private void Awake()
+        {
+            if (_instance == null)
+            {
+                _instance = this;
+            }
+        }
 
         // Use this for initialization
         void Start()
@@ -94,16 +124,58 @@ namespace JGame
                     obj.transform.localScale = tileSize; // scale
 
                     var tile = obj.GetComponent<Tile>();
-
                     tile.position.x = x;
                     tile.position.y = y;
 
-                    tiles.Add(obj);
+                    var sr = obj.GetComponent<SpriteRenderer>();
+                    sr.sortingOrder = tileNum.x * y + x;
+
+                    tiles.Add(tile);
                 }
+            }
+
+            // add spawn point
+            for(int i=0; i< newData.SpawnPoints.Length; ++i)
+            {
+#if UNITY_EDITOR
+                GameObject obj = null;
+                if (Application.isEditor)
+                {
+                    obj = Instantiate(spawnPointPrefab);
+                }
+                else
+                {
+                    obj = ObjectPoolManager.instance.Pop(spawnPointPrefab);
+                }
+#else
+                    GameObject obj = ObjectPoolManager.instance.Pop(spawnPointPrefab);
+#endif
+                if (obj == null)
+                {
+                    Debug.LogError("obj == null.");
+                }
+
+                // set game object properties
+                obj.name = "SpawnPoint_" + i + "_team"+ newData.SpawnPoints[i].teamIndex; // name
+                obj.transform.SetParent(transform); // parent
+                obj.transform.position = transform.position + (tileSpacingX * newData.SpawnPoints[i].tileX) + (tileSpacingY * newData.SpawnPoints[i].tileY); // position
+                obj.transform.localScale = tileSize; // scale
+
+                var spawnPoint = obj.GetComponent<SpawnPoint>();
+                spawnPoint.position.x = newData.SpawnPoints[i].tileX;
+                spawnPoint.position.y = newData.SpawnPoints[i].tileY;
+                spawnPoint.SetTeamIndex(newData.SpawnPoints[i].teamIndex);
+
+                spawnPoints.Add(spawnPoint);
             }
         }
 
         // get tile
+        public Tile GetTile(IntRect pos)
+        {
+            return GetTile(pos.x, pos.y);
+        }
+
         public Tile GetTile(int x, int y)
         {
             if( x < 0 || y < 0 || x >= tileNum.x || y > tileNum.y )
@@ -111,7 +183,41 @@ namespace JGame
                 Debug.LogError("Wrong index.");
             }
 
-            return tiles[y * tileNum.x + x].GetComponent<Tile>();
+            return tiles[y * tileNum.x + x];
+        }
+
+        public void LeaveFrom( IntRect pos, GameObject obj )
+        {
+            LeaveFrom(pos.x, pos.y, obj);
+        }
+
+        public void LeaveFrom( int x, int y, GameObject obj )
+        {
+            Tile t = GetTile(x,y);
+
+            if (t == null) return;
+
+            if (t.actor == obj)
+            {
+                t.actor = null;
+            }
+        }
+
+        public void MoveTo( IntRect pos, GameObject obj )
+        {
+            MoveTo(pos.x, pos.y, obj);
+        }
+
+        public void MoveTo( int x, int y, GameObject obj )
+        {
+            Tile t = GetTile(x, y);
+
+            if (t == null) return;
+
+            if (t.actor == null)
+            {
+                t.actor = obj;
+            }
         }
     }
 }

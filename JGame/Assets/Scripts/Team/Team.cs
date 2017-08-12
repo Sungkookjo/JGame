@@ -8,10 +8,12 @@ namespace JGame
     {
         //protected List<Team> alianceList;
 
-        public int teamIndex;
+        public int teamIndex = Config.teamNone;
 
         public bool IsSameTeam(Team other)
         {
+            if (teamIndex == Config.teamNone) return false;
+
             return (this == other || teamIndex == other.teamIndex);
         }
     }

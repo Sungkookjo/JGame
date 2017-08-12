@@ -10,7 +10,7 @@ namespace JGame
         protected List<GameObject> teamHeros = new List<GameObject>();
 
         // is auto?
-        bool isAuto = false;
+        public bool isAuto = false;
 
         private void Awake()
         {

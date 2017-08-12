@@ -10,7 +10,7 @@ namespace JGame
         public IntRect position;
 
         // actor on tile
-        protected GameObject actor;
+        public GameObject actor;
         
     }
 }

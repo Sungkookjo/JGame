@@ -15,7 +15,7 @@ namespace JGame
         [MenuItem("Window/Map Editor")]
         static void Init()
         {
-            folderPath = Application.dataPath + "/Resources/Map";
+            folderPath = Application.dataPath + "Resources/Map";
             fileExtension = "json";
 
             EditorWindow.GetWindow(typeof(MapEditor)).Show();

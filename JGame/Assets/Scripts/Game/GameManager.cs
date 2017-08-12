@@ -8,7 +8,7 @@ namespace JGame
     [System.Serializable]
     public class GameInfo
     {
-        // max team num. 0 ~ teamMax
+        // max team num. 0 ~ teamNum
         public int teamNum;
 
         // map path
@@ -19,13 +19,18 @@ namespace JGame
     {
         GameInfo gameInfo = null;
 
+        // {{ @Test
         // controller prefab
         GameObject defaultController = null;
+        GameObject defaultHero = null;
+        // }} @Test
 
         public Map map;
 
         // all controllers
         public List<Controller> allController = new List<Controller>();
+        // current turn controller index
+        public int curTurn = 0;
 
         // all teams
         List<Team> teams = new List<Team>();
@@ -86,7 +91,7 @@ namespace JGame
         IEnumerator InitializeGame()
         {
             // {{ @ Test
-            if(gameInfo == null )
+            if (gameInfo == null )
             {
                 gameInfo = new GameInfo();
                 gameInfo.mapPath = "Map/Default";
@@ -94,18 +99,24 @@ namespace JGame
             }
             // }} @Test
 
+            // load map
+            LoadMap();
+            yield return null;
+
             // Create Teams
-            for(int i = 0;i< gameInfo.teamNum ; ++i)
+            for (int i = 0;i< gameInfo.teamNum ; ++i)
             {
                 CreateTeam(i);
             }
             yield return null;
 
+            // {{ @Test
             // Create Controllers
             if (defaultController == null)
             {
                 defaultController = Resources.Load<GameObject>(Config.defaultControllerPath);
             }
+            // }} @Test
 
             // one team = one controller
             for ( int i =0; i< gameInfo.teamNum ; ++i)
@@ -117,13 +128,24 @@ namespace JGame
             localController = allController[0];
             yield return null;
 
-            // load map
-            LoadMap();
+            // Create Hero
+            // {{ @test
+            if (defaultHero == null)
+            {
+                defaultHero = Resources.Load<GameObject>(Config.defaultHeroPath);
+            }
+            for ( int j = 0; j<2;++j)
+            {
+                for (int i = 0; i < 4; ++i)
+                {
+                    CreateHero(allController[j],i);
 
-            yield return null;
+                    yield return null;
+                }
+            }
+            // }} @test
 
             isInitialized = true;
-
             yield return null;
         }
 
@@ -140,6 +162,45 @@ namespace JGame
             control.transform.SetParent(null);
 
             return control;
+        }
+        
+        // create new hero
+        protected void CreateHero( Controller owner , int index )
+        {
+            SpawnPoint sp = GetBestSpawnPoint(owner.team.teamIndex);
+
+            if (sp == null) return;
+
+            GameObject Obj = ObjectPoolManager.instance.Pop(defaultHero, sp.transform.position);
+
+            Obj.name = "hero_" + index;
+
+            var hero = Obj.GetComponent<Hero>();
+
+            hero.SetOwner(owner);
+            hero.SetPosition(sp.position);
+        }
+
+        // get spawn point
+        protected SpawnPoint GetBestSpawnPoint(int teamIndex)
+        {
+            if (map == null)
+            {
+                return null;
+            }
+
+            for( int i = 0; i<map.spawnPoints.Count; ++i )
+            {
+                if( map.spawnPoints[i].teamIndex == teamIndex )
+                {
+                    if( map.GetTile(map.spawnPoints[i].position).actor == null )
+                    {
+                        return map.spawnPoints[i];
+                    }
+                }
+            }
+
+            return null;
         }
 
         // create new team
@@ -195,11 +256,16 @@ namespace JGame
             }
 
             yield return new WaitForSeconds(0.1f);
-            
-            while( true )
+
+            curTurn = -1;
+
+            while ( true )
             {
                 // get next turn controller
                 controller = GetNextTurnController();
+
+                // set controller auto
+                controller.isAuto = (controller != localController);
 
                 // begin turn
                 controller.BeginTurn();
@@ -221,14 +287,21 @@ namespace JGame
                 {
                     yield break;
                 }
-
                 yield return null;
             }
         }
 
         protected Controller GetNextTurnController()
         {
-            return allController[0];
+            curTurn += 1;
+
+            // loop index
+            if (curTurn < 0 || curTurn >= allController.Count )
+            {
+                curTurn = 0;
+            }
+
+            return allController[curTurn];
         }
 
         // game is over?

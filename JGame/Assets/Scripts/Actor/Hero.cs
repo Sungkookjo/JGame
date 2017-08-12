@@ -6,6 +6,7 @@ namespace JGame
 {
     public class Hero : Unit
     {
+        Controller owner = null;
         // hero troops
         protected Squad squad = new Squad();
         
@@ -24,6 +25,19 @@ namespace JGame
         void Update()
         {
 
+        }
+
+        // set owner
+        public void SetOwner( Controller newOwner)
+        {
+            if (owner == newOwner) return;
+
+            owner = newOwner;
+
+            if (owner == null) return;
+
+            SetTeam(owner.team);
+            transform.SetParent(newOwner.transform);
         }
 
         // change team

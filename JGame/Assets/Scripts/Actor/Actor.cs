@@ -6,7 +6,10 @@ namespace JGame
 {
     public class Actor : MonoBehaviour
     {
-        protected Team team = null;
+        [HideInInspector]
+        public Team team = null;
+
+        public IntRect position = new IntRect();
 
         // Use this for initialization
         void Start()
@@ -18,6 +21,15 @@ namespace JGame
         void Update()
         {
 
+        }
+
+        // set position
+        public void SetPosition(IntRect pos)
+        {
+            Map.instance.LeaveFrom(position, gameObject);
+            position.x = pos.x;
+            position.y = pos.y;
+            Map.instance.MoveTo(position, gameObject);
         }
 
         // SetTeam
