@@ -1,4 +1,5 @@
-﻿
+﻿using UnityEngine;
+
 namespace JGame
 {
     public class Config
@@ -19,5 +20,28 @@ namespace JGame
         // for data key
         public const string key_Country = "country";
         public const string key_DataVersion = "dataVersion";
+    }
+
+    public class JUtil
+    {
+        public static T FindComponent<T>() where T : MonoBehaviour
+        {
+            string objectName = typeof(T).Name;
+
+            return FindComponent<T>(objectName);
+        }
+
+        public static T FindComponent<T>(string objectName) where T : MonoBehaviour
+        {
+            GameObject obj = GameObject.Find(objectName);
+            if (obj == null)
+            {
+                return null;
+            }
+
+            T comp = obj.GetComponent<T>();
+
+            return comp;
+        }
     }
 }
