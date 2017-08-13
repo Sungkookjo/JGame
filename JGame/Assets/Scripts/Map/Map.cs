@@ -34,10 +34,7 @@ namespace JGame
     {
         // x * y
         public IntRect tileNum;
-
-        // scale
-        public Vector2 tileSize = new Vector2(1.4142f, 1.4142f);
-        
+                
         // x spacing
         public Vector3 tileSpacingX = new Vector3(0, 0, 0);
         // y spacing
@@ -86,10 +83,14 @@ namespace JGame
 
         public void Initialize(MapData newData)
         {
+            Vector3 top = new Vector3();
             tiles.Clear();
 
             tileNum.x = newData.tileX;
             tileNum.y = newData.tileY;
+
+            top += tileSpacingX * tileNum.x * -0.5f;
+            top += tileSpacingY * tileNum.y * -0.5f;
 
             for (int y = 0; y < tileNum.y; ++y)
             {
@@ -119,9 +120,7 @@ namespace JGame
                     // set game object properties
                     obj.name = "tile_" + (tileNum.x * y + x ) + "_" + y + "," + x; // name
                     obj.transform.SetParent(transform); // parent
-                    obj.transform.position = transform.position + (tileSpacingX * x) + (tileSpacingY * y); // position
-                    obj.transform.Rotate(0, 0, 45.0f); // rotation
-                    obj.transform.localScale = tileSize; // scale
+                    obj.transform.position = top + (tileSpacingX * x) + (tileSpacingY * y); // position
 
                     var tile = obj.GetComponent<Tile>();
                     tile.position.x = x;
@@ -158,8 +157,7 @@ namespace JGame
                 // set game object properties
                 obj.name = "SpawnPoint_" + i + "_team"+ newData.SpawnPoints[i].teamIndex; // name
                 obj.transform.SetParent(transform); // parent
-                obj.transform.position = transform.position + (tileSpacingX * newData.SpawnPoints[i].tileX) + (tileSpacingY * newData.SpawnPoints[i].tileY); // position
-                obj.transform.localScale = tileSize; // scale
+                obj.transform.position = top + (tileSpacingX * newData.SpawnPoints[i].tileX) + (tileSpacingY * newData.SpawnPoints[i].tileY); // position
 
                 var spawnPoint = obj.GetComponent<SpawnPoint>();
                 spawnPoint.position.x = newData.SpawnPoints[i].tileX;
