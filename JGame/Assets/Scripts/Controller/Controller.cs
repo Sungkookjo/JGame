@@ -1,11 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using JGame.Pool;
 
 namespace JGame
 {
     public class Controller : Actor
     {
+        GameObject arlramObj = null;
+
         // heros
         protected List<GameObject> teamHeros = new List<GameObject>();
 
@@ -64,6 +67,33 @@ namespace JGame
             GameManager.instance.allController.Remove(this);
 
             base.OnPoolReleased();
+        }
+
+        public bool ProcessInput()
+        {
+            if (JInputManager.ButtonDown(0))
+            {
+                Vector2 wp = Camera.main.ScreenToWorldPoint(JInputManager.GetScreenPosition(0));
+                Ray2D ray = new Ray2D(wp, Vector2.zero);
+                RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+
+                if (hit.collider != null)
+                {
+                    if(arlramObj != null)
+                    {
+                        arlramObj.transform.position = hit.collider.transform.position;
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public void CreateArlamObj()
+        {
+            arlramObj = ObjectPoolManager.instance.Pop( Resources.Load<GameObject>("Prefab/Map/Arlram") );
         }
     }
 }
