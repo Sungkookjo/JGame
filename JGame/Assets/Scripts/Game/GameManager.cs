@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using JGame.Pool;
 using JGame.Data;
 
@@ -18,6 +19,8 @@ namespace JGame
 
     public class GameManager : MonoBehaviour
     {
+        public CameraInput cameraInput;
+
         GameInfo gameInfo = null;
 
         public Map map;
@@ -65,7 +68,21 @@ namespace JGame
 
         private void Start()
         {
+            if(cameraInput == null )
+            {
+                cameraInput = JUtil.FindComponent<CameraInput>("Camera");
+            }
+
             StartCoroutine(UpdateGame());
+        }
+
+        private void Update()
+        {
+            // if not selected ui
+            if(EventSystem.current.currentSelectedGameObject == null && EventSystem.current.IsPointerOverGameObject() == false )
+            {
+                ProcessInput();
+            }
         }
 
         // Create Instance
@@ -113,6 +130,7 @@ namespace JGame
 
             // my controller
             localController = allController[0];
+            localController.CreateArlamObj();
             yield return null;
 
             // Create Hero
@@ -220,12 +238,7 @@ namespace JGame
         {
             if( map == null )
             {
-                var obj = GameObject.Find("Map");
-
-                if( obj != null )
-                {
-                    map = obj.GetComponent<Map>();
-                }
+                map = JUtil.FindComponent<Map>();
             }
 
             if (map == null) return;
@@ -305,6 +318,22 @@ namespace JGame
         // game is over?
         protected bool CheckGameOver()
         {
+            return false;
+        }
+
+        // process input
+        protected bool ProcessInput()
+        {
+            if (cameraInput.ProcessInput())
+            {
+                return true;
+            }
+
+            if( localController != null && localController.ProcessInput() )
+            {
+                return true;
+            }
+
             return false;
         }
     }
