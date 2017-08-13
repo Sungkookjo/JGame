@@ -36,15 +36,6 @@ public class MakePng : MonoBehaviour
     {
         if (animator == null)
         {
-            var obj = GameObject.Find("Animation");
-            if (obj != null)
-            {
-                animator = obj.GetComponent<Animator>();
-            }
-        }
-
-        if (animator == null)
-        {
             yield break;
         }
         isWorking = true;
