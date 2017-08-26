@@ -71,7 +71,7 @@ namespace JGame.Data
         protected void Initialize()
         {
             //@Test
-            //PlayerPrefs.DeleteAll();
+            PlayerPrefs.DeleteAll();
 
             if (IsFirstExcute())
             {
@@ -149,15 +149,15 @@ namespace JGame.Data
                 switch (Application.systemLanguage)
                 {
                     case SystemLanguage.Korean:
-                        Country = "Kor";
+                        Country = "kor";
                         break;
                     default:
-                        Country = "Eng";
+                        Country = "eng";
                         break;
                 }
                 SetStrData(Config.key_Country, Country);
             }
-            return GetStrData(Config.key_Country, "Kor");
+            return GetStrData(Config.key_Country, "kor");
         }
 
         #region HeroInfo

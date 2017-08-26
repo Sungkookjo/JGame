@@ -4,20 +4,46 @@ using UnityEngine;
 
 namespace JGame
 {
-    public class Actor : MonoBehaviour
+    abstract public class Actor : MonoBehaviour
     {
         [HideInInspector]
-        public Team team = null;        
+        protected Team _team = null;
+        public Team team { get { return _team; } }
+
+        public SpriteRenderer spriteRenderer;
+
+        public bool isSelecteable = true;
+        static protected Color selectableColor = new Color(1, 1, 1, 1);
+        static protected Color notSelectableColor = new Color(0.5f, 0.5f, 0.5f, 1.0f);
 
         // SetTeam
         public virtual void SetTeam( Team newTeam )
         {
-            if( team == newTeam )
+            if(_team == newTeam )
             {
                 return;
             }
 
-            team = newTeam;
+            _team = newTeam;
+        }
+
+        public virtual void SetSelectable(bool selectable)
+        {
+            if (isSelecteable == selectable) return;
+
+            isSelecteable = selectable;
+
+            if(spriteRenderer != null )
+            {
+                if (isSelecteable)
+                {
+                    spriteRenderer.color = selectableColor;
+                }
+                else
+                {
+                    spriteRenderer.color = notSelectableColor;
+                }
+            }
         }
 
         // instantiated
@@ -28,11 +54,13 @@ namespace JGame
         // Re Use
         public virtual void OnPoolReuse()
         {
+            SetSelectable(true);
         }
 
         // Release
         public virtual void OnPoolReleased()
         {
+            SetSelectable(false);
         }
     }
 }

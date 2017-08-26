@@ -47,7 +47,7 @@ namespace JGame
                 curPos.x -= GetDraggingDelta(0).x;
                 curPos.y -= GetDraggingDelta(0).y;
 
-                transform.position = ClampPos( curPos );
+                SetPosition(curPos);
 
                 return true;
             }
@@ -55,6 +55,26 @@ namespace JGame
             return false;
         }
         
+        public void SetPosition( Vector3 pos )
+        {
+            SetPosition(pos.x, pos.y);
+        }
+
+        public void SetPosition( Vector2 pos )
+        {
+            SetPosition(pos.x, pos.y);
+        }
+
+        public void SetPosition( float x, float y )
+        {
+            var curPos = transform.position;
+
+            curPos.x = x;
+            curPos.y = y;
+
+            transform.position = ClampPos(curPos);
+        }
+
         protected bool IsScaleInput()
         {
             return JInputManager.IsResizing();

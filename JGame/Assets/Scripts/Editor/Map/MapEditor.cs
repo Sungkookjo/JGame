@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System;
 using System.IO;
 
 namespace JGame
@@ -7,34 +8,31 @@ namespace JGame
     public class MapEditor : EditorWindow
     {
         Vector2 scrollPos;
-        protected static string folderPath = "";
-        protected static string fileExtension = "json";
+        protected string folderPath = "";
+        protected string fileExtension = "json";
 
         public MapData          mapData;
 
         [MenuItem("Window/Map Editor")]
         static void Init()
         {
-            folderPath = Application.dataPath + "Resources/Map";
-            fileExtension = "json";
-
             EditorWindow.GetWindow(typeof(MapEditor)).Show();
         }
 
         // draw ui
         private void OnGUI()
         {
+            if (folderPath.Length <= 0)
+            {
+                folderPath = Application.dataPath + "Resources/Map";
+                fileExtension = "json";
+            }
+
             if (mapData != null)
             {
-                if (mapData.datas != null && mapData.datas.Length != (mapData.tileX * mapData.tileY))
+                if (mapData.datas != null && mapData.datas.Length != (mapData.tileX * mapData.tileY) )
                 {
-                    var newDatas = new int[mapData.tileX * mapData.tileY];
-                    var length = Mathf.Min(newDatas.Length, mapData.datas.Length);
-                    for(int i=0;i< length; ++i)
-                    {
-                        newDatas[i] = mapData.datas[i];
-                    }                    
-                    mapData.datas = newDatas;
+                    Array.Resize( ref mapData.datas , (mapData.tileX * mapData.tileY) );
                 }
 
                 // begin scroll
@@ -103,6 +101,7 @@ namespace JGame
 
             if (!string.IsNullOrEmpty(filePath))
             {
+                folderPath = System.IO.Path.GetDirectoryName(filePath);
                 string dataAsJson = File.ReadAllText(filePath);
 
                 mapData = JsonUtility.FromJson<MapData>(dataAsJson);
@@ -115,6 +114,7 @@ namespace JGame
 
             if (!string.IsNullOrEmpty(filePath))
             {
+                folderPath = System.IO.Path.GetDirectoryName(filePath);
                 string dataAsJson = JsonUtility.ToJson(mapData);
                 File.WriteAllText(filePath, dataAsJson);
             }

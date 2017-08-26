@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace JGame
 {
-    public class Unit : Actor
+    abstract public class Unit : Actor
     {
         // is dead?
         protected bool _isDead;

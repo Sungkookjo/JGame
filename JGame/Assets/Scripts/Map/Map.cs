@@ -28,6 +28,30 @@ namespace JGame
     {
         public int x;
         public int y;
+
+        public int magnitude { get { return Mathf.Abs(x) + Mathf.Abs(y); } }
+
+        public void Normalize()
+        {
+            x = Mathf.Clamp(x, -1, 1);
+            y = Mathf.Clamp(y, -1, 1);
+        }
+
+        public static IntRect operator -(IntRect left, IntRect right)
+        {
+            IntRect retval = new IntRect();
+            retval.x = left.x - right.x;
+            retval.y = left.y - right.y;
+            return retval;
+        }
+
+        public static IntRect operator +(IntRect left, IntRect right)
+        {
+            IntRect retval = new IntRect();
+            retval.x = left.x + right.x;
+            retval.y = left.y + right.y;
+            return retval;
+        }
     }
 
     public class Map : MonoBehaviour
@@ -48,6 +72,9 @@ namespace JGame
         // created tiles
         public List<Tile> tiles = new List<Tile>();
         public List<SpawnPoint> spawnPoints = new List<SpawnPoint>();
+
+        public GameObject arlramObj;
+        public List<GameObject> arlramlist;
 
         // instance
         private static Map _instance = null;
@@ -71,6 +98,26 @@ namespace JGame
         // Use this for initialization
         void Start()
         {
+            arlramObj = Instantiate(Resources.Load<GameObject>("Prefab/Map/Arlram"));
+            arlramObj.GetComponent<SpriteRenderer>().color = new Color(1, 1, 0, 1);
+            arlramObj.GetComponent<SpriteRenderer>().sortingOrder -= 1;
+            arlramObj.SetActive(false);
+        }
+
+        void CreateArlram( Vector3 position )
+        {
+            var newObj = ObjectPoolManager.instance.Pop(arlramObj);
+            newObj.transform.position = position;
+            arlramlist.Add(newObj);
+        }
+
+        void ClearArlramList()
+        {
+            foreach( GameObject obj in arlramlist )
+            {
+                ObjectPoolManager.instance.Push(obj);
+            }
+            arlramlist.Clear();
         }
 
         // initialize
@@ -176,9 +223,9 @@ namespace JGame
 
         public Tile GetTile(int x, int y)
         {
-            if( x < 0 || y < 0 || x >= tileNum.x || y > tileNum.y )
+            if( x < 0 || y < 0 || x >= tileNum.x || y >= tileNum.y )
             {
-                Debug.LogError("Wrong index.");
+                return null;
             }
 
             return tiles[y * tileNum.x + x];
@@ -215,6 +262,50 @@ namespace JGame
             if (t.actor == null)
             {
                 t.actor = obj;
+            }
+        }
+
+        public void DisableAllTiles()
+        {
+            ClearArlramList();
+            for ( int i = 0; i < tiles.Count; ++i )
+            {
+                if( tiles[i] != null )
+                {
+                    tiles[i].SetSelectable(false);
+                }
+            }
+        }
+
+        public void EnableAllTiles()
+        {
+            ClearArlramList();
+            for (int i = 0; i < tiles.Count; ++i)
+            {
+                if (tiles[i] != null)
+                {
+                    tiles[i].SetSelectable(true);
+                }
+            }
+        }
+
+        public void EnableRangeTiles( IntRect position, int range )
+        {
+            DisableAllTiles();
+
+            for (int y = (position.y - range); y <= (position.y + range); ++y)
+            {
+                var gab = range - Mathf.Abs(y - position.y);
+                for ( int x = position.x - gab; x <= position.x + gab;++x )
+                {
+                    var tile = GetTile(x, y);
+
+                    if( tile != null )
+                    {
+                        CreateArlram(tile.transform.position);
+                        tile.SetSelectable(true);
+                    }
+                }
             }
         }
     }

@@ -14,6 +14,11 @@ namespace JGame
 
     public class Hero : Unit
     {
+        protected int _moveRange;
+        public int moveRange {  get { return _moveRange; } }
+
+        public bool isTurnEnded;
+
         public IntRect position = new IntRect();
 
         Controller owner = null;
@@ -21,27 +26,99 @@ namespace JGame
         // hero troops
         protected Squad squad = new Squad();
 
+        // awake
         private void Awake()
         {
             squad.owner = this;
         }
 
+        // begin turn
+        public void BeginTurn()
+        {
+            isTurnEnded = false;
+            _moveRange = squad.GetMoveRange();
+        }
+
+        // end turn
+        public void EndTurn()
+        {
+            _moveRange = 0;
+            isTurnEnded = true;
+        }
+
+        // set selectable
+        public override void SetSelectable(bool selectable)
+        {
+            base.SetSelectable(selectable);
+            squad.SetSelectable(selectable);
+        }
+
+        // can attack
+        public bool CanAttack(Hero other)
+        {
+            return !team.IsSameTeam(other.team);
+        }
+
+        public bool CanMoveTo(Tile tile)
+        {
+            if (tile.actor != null) return false;
+
+            if ( (tile.position - position).magnitude > _moveRange )
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool MoveTo(Tile tile)
+        {
+            if( !CanMoveTo(tile) )
+            {
+                return false;
+            }
+
+            // cached curren position
+            var destPos = position;
+
+            // set new position
+            SetPosition(tile.position);
+
+            // reduce move range
+            _moveRange -= (destPos - position).magnitude;
+
+            #if UNITY_EDITOR
+            if (_moveRange < 0)
+            {
+                Debug.LogError("_moveRange < 0");
+            }
+            #endif
+
+            return true;
+        }
         // set position
+        #region setposition
         public void SetPosition(IntRect pos)
         {
             SetPosition(pos.x, pos.y);
         }
-
         public void SetPosition(int x, int y)
         {
+            // detach from old tile
             Map.instance.LeaveFrom(position, gameObject);
+
             position.x = x;
             position.y = y;
+
+            // attach to new tile
             Map.instance.MoveTo(position, gameObject);
+            transform.position = Map.instance.GetTile(x, y).transform.position;
 
             squad.MoveTo(x, y);
         }
+        #endregion
 
+        // initialize from info
         public void InitializeFromInfo(HeroInfo info)
         {
             if (info == null) return;
@@ -93,6 +170,11 @@ namespace JGame
         {
             base.OnPoolReleased();
             squad.OnPoolReleased();
+        }
+
+        public int GetMoveSpeed()
+        {
+            return 2;
         }
     }
 }

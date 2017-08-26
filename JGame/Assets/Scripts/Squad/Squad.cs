@@ -8,6 +8,8 @@ namespace JGame
     public class Squad
     {
         protected IntRect position = new IntRect();
+        protected IntRect rotation = new IntRect();
+
         public Hero owner;
         public Team team = null;
         protected Soldier[] members = new Soldier[Config.MaxSoldierNum];
@@ -19,11 +21,23 @@ namespace JGame
             
             members[idx] = newMember;
 
-            if(newMember != null)
+            if(members[idx] != null)
             {
-                newMember.SetTeam(team);
-                newMember.transform.SetParent(owner.transform);
-                newMember.transform.position = GetMemberPosition( idx );
+                members[idx].SetTeam(team);
+                members[idx].transform.SetParent(owner.transform);
+                members[idx].transform.position = GetMemberPosition( idx );
+                members[idx].SetRotation(rotation);
+            }
+        }
+
+        public void SetSelectable(bool selectable)
+        {
+            foreach (var member in members)
+            {
+                if( member != null )
+                {
+                    member.SetSelectable(selectable);
+                }
             }
         }
 
@@ -67,8 +81,12 @@ namespace JGame
 
         public void MoveTo(int x, int y)
         {
+            var DestPos = position;
+
             position.x = x;
             position.y = y;
+
+            Rotate(position - DestPos);
 
             // set members position
             for (int i = 0; i < members.Length; ++i)
@@ -81,6 +99,36 @@ namespace JGame
                 // }} @Test
             }
         }
+        #region rotate
+        public void Rotate( IntRect r)
+        {
+            Rotate(r.x, r.y);
+        }
+        public void Rotate(int x, int y)
+        {
+            rotation.x = x;
+            rotation.y = y;
+
+            if (x == 0)
+            {
+                rotation.x = -y;
+            }
+            if (y == 0)
+            {
+                rotation.y = x;
+            }
+
+            rotation.Normalize();
+
+            for (int i = 0; i < members.Length; ++i)
+            {
+                if (members[i] != null)
+                {
+                    members[i].SetRotation(rotation);
+                }
+            }
+        }
+        #endregion
 
         // reuse
         public void OnPoolReuse()
@@ -99,6 +147,11 @@ namespace JGame
                 }
                 members[i] = null;
             }
+        }
+
+        public int GetMoveRange()
+        {
+            return 2;
         }
     }
 }

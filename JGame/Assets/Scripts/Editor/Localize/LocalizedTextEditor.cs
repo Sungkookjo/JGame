@@ -1,28 +1,31 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.IO;
+using System.Linq;
 
 namespace JGame.Localization
 {
     public class LocalizedTextEditor : EditorWindow
     {
-        protected static string folderPath = "";
-        protected static string fileExtension = "json";
+        protected string folderPath = "";
+        protected string fileExtension = "json";
 
         public LocalizationData localizationData;
 
         [MenuItem("Window/Localized Text Editor")]
         static void Init()
         {
-            folderPath = Application.dataPath + "/Resources/Localize";
-            fileExtension = "json";
-
             EditorWindow.GetWindow(typeof(LocalizedTextEditor)).Show();
         }
 
         // draw ui
         private void OnGUI()
         {
+            if (folderPath.Length <= 0)
+            {
+                folderPath = Application.dataPath + "/Resources/Localize";
+            }
+
             if (localizationData != null)
             {
                 SerializedObject serializedObject = new SerializedObject(this);
@@ -37,8 +40,8 @@ namespace JGame.Localization
                 }
             }
 
-            // load localization data
-            if (GUILayout.Button("Load data"))
+            // load localization data. ( Json )
+            if (GUILayout.Button("Load Json data"))
             {
                 LoadGameData();
             }
@@ -56,6 +59,7 @@ namespace JGame.Localization
 
             if (!string.IsNullOrEmpty(filePath))
             {
+                folderPath = System.IO.Path.GetDirectoryName(filePath);
                 string dataAsJson = File.ReadAllText(filePath);
 
                 localizationData = JsonUtility.FromJson<LocalizationData>(dataAsJson);
@@ -68,6 +72,7 @@ namespace JGame.Localization
 
             if (!string.IsNullOrEmpty(filePath))
             {
+                folderPath = System.IO.Path.GetDirectoryName(filePath);
                 string dataAsJson = JsonUtility.ToJson(localizationData);
                 File.WriteAllText(filePath, dataAsJson);
             }
@@ -76,6 +81,6 @@ namespace JGame.Localization
         private void CreateNewData()
         {
             localizationData = new LocalizationData();
-        }
+        }        
     }
 }

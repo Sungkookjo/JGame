@@ -55,7 +55,7 @@ namespace JGame.Localization
         // Initialize
         public void Initialize()
         {
-            LoadLocalizedText("Localization/"+GetCountry());
+            LoadLocalizedText("Localize/"+GetCountry());
         }
 
         // load localization data file
@@ -99,30 +99,7 @@ namespace JGame.Localization
         public string GetCountry()
         {
             // from DataController
-            if ( DataController.instance != null )
-            {
-                return DataController.instance.GetCountry();
-            }
-
-            // from PlayerPrefs
-            if (!PlayerPrefs.HasKey(Config.key_Country))
-            {
-                string country;
-                switch (Application.systemLanguage)
-                {
-                    case SystemLanguage.Korean:
-                        country = "Kor";
-                        break;
-                    default:
-                        country = "Eng";
-                        break;
-                }
-                PlayerPrefs.SetString(Config.key_Country, country);
-
-                return country;
-            }
-
-            return PlayerPrefs.GetString(Config.key_Country, "Kor");
+            return DataController.instance.GetCountry();
         }
     }
 }

@@ -136,11 +136,18 @@ namespace JGame.Pool
         // add pool object component
         protected PoolObject AddPoolObjectComponent(GameObject obj)
         {
+            // check actor
             var actorComp = obj.GetComponent<Actor>();
-
             if( actorComp != null )
             {
                 return obj.AddComponent<PoolObject_Actor>();
+            }
+
+            // check ui
+            var uiComp = obj.GetComponent<UIObject>();
+            if( uiComp != null )
+            {
+                return obj.AddComponent<PoolObject_UI>();
             }
 
             return obj.AddComponent<PoolObject>();

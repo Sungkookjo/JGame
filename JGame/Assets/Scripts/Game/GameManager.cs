@@ -26,7 +26,7 @@ namespace JGame
         public Map map;
 
         // all controllers
-        public List<Controller> allController = new List<Controller>();
+        protected List<Controller> allController = new List<Controller>();
         // current turn controller index
         public int curTurn = 0;
 
@@ -37,7 +37,9 @@ namespace JGame
         Controller controller = null;
 
         // local user controller
-        Controller localController = null;
+        Controller _localController = null;
+
+        public Controller localController {  get { return _localController; } }
 
         // is Initialized?
         public bool isInitialized = false;
@@ -129,8 +131,8 @@ namespace JGame
             }
 
             // my controller
-            localController = allController[0];
-            localController.CreateArlamObj();
+            _localController = allController[0];
+            _localController.CreateArlamObj();
             yield return null;
 
             // Create Hero
@@ -178,7 +180,7 @@ namespace JGame
 
             var hero = Obj.GetComponent<Hero>();
 
-            
+            owner.AddHero(Obj);
             hero.SetOwner(owner);
             hero.SetPosition(sp.position);
 
@@ -291,7 +293,7 @@ namespace JGame
 
                 // end turn
                 controller.EndTurn();
-                yield return null;
+                yield return new WaitForSeconds( 0.5f );
 
                 // game over?
                 if ( CheckGameOver() )
@@ -335,6 +337,21 @@ namespace JGame
             }
 
             return false;
+        }
+
+        public void AddController(Controller ctr)
+        {
+            if (allController.Find(item => item == ctr) != null)
+            {
+                return;
+            }
+
+            allController.Add(ctr);
+        }
+
+        public void RemoveController(Controller ctr)
+        {
+            allController.Remove(ctr);
         }
     }
 }

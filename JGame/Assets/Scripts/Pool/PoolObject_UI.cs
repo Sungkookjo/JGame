@@ -4,18 +4,18 @@ using UnityEngine;
 
 namespace JGame.Pool
 {
-    public class PoolObject_Actor : PoolObject
+    public class PoolObject_UI : PoolObject
     {
         // instantiated
         public override void OnInstantiate()
         {
             base.OnInstantiate();
 
-            var actor = gameObject.GetComponent<Actor>();
+            var ui = gameObject.GetComponent<UIObject>();
 
-            if (actor != null)
+            if (ui != null)
             {
-                actor.OnPoolInstiate();
+                ui.OnPoolInstiate();
             }
         }
 
@@ -24,11 +24,11 @@ namespace JGame.Pool
         {
             base.OnReuse();
 
-            var actor = gameObject.GetComponent<Actor>();
+            var ui = gameObject.GetComponent<UIObject>();
 
-            if (actor != null)
+            if (ui != null)
             {
-                actor.OnPoolReuse();
+                ui.OnPoolReuse();
             }
         }
 
@@ -37,11 +37,11 @@ namespace JGame.Pool
         {
             base.OnRelease();
 
-            var actor = gameObject.GetComponent<Actor>();
+            var ui = gameObject.GetComponent<UIObject>();
 
-            if (actor != null)
+            if (ui != null)
             {
-                actor.OnPoolReleased();
+                ui.OnPoolReleased();
             }
         }
     }

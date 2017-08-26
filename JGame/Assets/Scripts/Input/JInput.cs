@@ -8,7 +8,7 @@ namespace JGame
     public class JInputManager
     {
         protected static JInput _instance;
-        protected static JInput instance
+        public static JInput instance
         {
             get
             {
@@ -37,6 +37,11 @@ namespace JGame
             return instance.ButtonDown(btIndex);
         }
 
+        public static bool ButtonUp(int btIndex)
+        {
+            return instance.ButtonUp(btIndex);
+        }
+
         public static Vector3 GetScreenPosition(int btIndex)
         {
             return instance.GetScreenPosition(btIndex);
@@ -49,7 +54,7 @@ namespace JGame
 
         public static float GetResizingDelta()
         {
-            return instance.GetResizingDelta();
+            return instance.GetResizingDelta() * JInput.resizeFactor;
         }
 
         public static bool IsButtonDragging(int btIndex)
@@ -59,17 +64,18 @@ namespace JGame
 
         public static Vector2 GetButtonDelta( int btIndex)
         {
-            return instance.GetButtonDelta(btIndex);
+            return instance.GetButtonDelta(btIndex) * JInput.buttonDeltaFactor;
         }
     }
 
     abstract public class JInput
     {
-        protected static float resizeFactor;
-        protected static float buttonDeltaFactor;
+        public static float resizeFactor;
+        public static float buttonDeltaFactor;
 
         public abstract bool IsResizing();
         public abstract bool ButtonDown(int btIndex);
+        public abstract bool ButtonUp(int btIndex);
         public abstract Vector3 GetScreenPosition(int btIndex);
         public abstract float GetResizingDelta();
         public abstract bool IsButtonDragging(int btIndex);
@@ -80,8 +86,8 @@ namespace JGame
     {
         public PCInput()
         {
-            resizeFactor = 0.2f;
-            buttonDeltaFactor = 0.05f;
+            resizeFactor = 2.0f;
+            buttonDeltaFactor = 1.0f;
         }
 
         public override bool IsResizing()
@@ -92,6 +98,11 @@ namespace JGame
         public override bool ButtonDown(int btIndex)
         {
             return Input.GetMouseButtonDown(btIndex);
+        }
+
+        public override bool ButtonUp(int btIndex)
+        {
+            return Input.GetMouseButtonUp(btIndex);
         }
 
         public override Vector3 GetScreenPosition(int btIndex)
@@ -136,6 +147,11 @@ namespace JGame
         public override bool ButtonDown(int btIndex)
         {
             return (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began);
+        }
+
+        public override bool ButtonUp(int btIndex)
+        {
+            return (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended);
         }
 
         public override Vector3 GetScreenPosition(int btIndex)
