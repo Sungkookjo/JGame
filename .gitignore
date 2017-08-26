@@ -20,3 +20,6 @@ JGame/Temp/
 Icon?
 ehthumbs.db
 Thumbs.db
+ExternalTools/DataTransfer/Transfer/obj/
+ExternalTools/DataTransfer/Transfer/bin/
+ExternalTools/DataTransfer/DataTransfer/obj/
