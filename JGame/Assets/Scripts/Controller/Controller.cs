@@ -210,7 +210,10 @@ namespace JGame
         // create arlam object.
         public void CreateArlamObj()
         {
-            arlramObj = ObjectPoolManager.instance.Pop( Resources.Load<GameObject>("Prefab/Map/Arlram") );
+            arlramObj = ObjectPoolManager.instance.Pop( Resources.Load<GameObject>("Prefab/Map/Arrow") );
+
+            if( arlramObj != null )
+                arlramObj.SetActive(false);
         }
 
         // set selected object. 

@@ -25,6 +25,37 @@ namespace JGame
         public const string key_DataVersion = "dataVersion";
     }
 
+    [System.Serializable]
+    public struct IntRect
+    {
+        public int x;
+        public int y;
+
+        public int magnitude { get { return Mathf.Abs(x) + Mathf.Abs(y); } }
+
+        public void Normalize()
+        {
+            x = Mathf.Clamp(x, -1, 1);
+            y = Mathf.Clamp(y, -1, 1);
+        }
+
+        public static IntRect operator -(IntRect left, IntRect right)
+        {
+            IntRect retval = new IntRect();
+            retval.x = left.x - right.x;
+            retval.y = left.y - right.y;
+            return retval;
+        }
+
+        public static IntRect operator +(IntRect left, IntRect right)
+        {
+            IntRect retval = new IntRect();
+            retval.x = left.x + right.x;
+            retval.y = left.y + right.y;
+            return retval;
+        }
+    }
+
     public class JUtil
     {
         public static T FindComponent<T>() where T : MonoBehaviour

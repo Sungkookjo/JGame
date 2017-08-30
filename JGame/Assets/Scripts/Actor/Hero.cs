@@ -126,13 +126,17 @@ namespace JGame
             // set name
             name = info.name;
 
+            squad.MoveTo(position);
+
             // add soldiers
-            for( int i = 0; i<info.soldiers.Length; ++i)
+            for ( int i = 0; i<info.soldiers.Length; ++i)
             {
                 squad.SetMembers(i, DataController.CreateSoliderById(info.soldiers[i]) );
             }
 
-            squad.MoveTo(position);
+            squad.UpdateSquadFormation();
+            squad.UpdateMembersRotation();
+            squad.UpdateMembersPosition();
         }
 
         // set owner

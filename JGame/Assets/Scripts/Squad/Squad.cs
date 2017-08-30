@@ -13,6 +13,7 @@ namespace JGame
         public Hero owner;
         public Team team = null;
         protected Soldier[] members = new Soldier[Config.MaxSoldierNum];
+        protected Soldier[] formation = new Soldier[Config.MaxSoldierNum];
 
         // Set member
         public void SetMembers( int idx , Soldier newMember )
@@ -25,8 +26,6 @@ namespace JGame
             {
                 members[idx].SetTeam(team);
                 members[idx].transform.SetParent(owner.transform);
-                members[idx].transform.position = GetMemberPosition( idx );
-                members[idx].SetRotation(rotation);
             }
         }
 
@@ -65,6 +64,64 @@ namespace JGame
             MoveTo(newPos.x, newPos.y);
         }
 
+        public void UpdateMembersPosition()
+        {
+            for( int i = 0; i < formation.Length;++i )
+            {
+                if(formation[i] != null)
+                {
+                    formation[i].transform.position = GetMemberPosition(i);
+                }
+            }
+        }
+
+        public void UpdateSquadFormation()
+        {
+            int[,] matFormation = null;
+            if( rotation.x == -1 )
+            {
+                if (rotation.y == 1)
+                {
+                    matFormation = new int[,] { { 8, 7, 6 }, { 5, 4, 3 }, { 2, 1, 0 } };
+                }
+                else
+                {
+                    matFormation = new int[,] { { 2, 5, 8 }, { 1, 4, 7 }, { 0, 3, 6 } };
+                }
+            }
+            else
+            {
+                if (rotation.y == 1)
+                {
+                    matFormation = new int[,] { { 6, 3, 0 }, { 7, 4, 1 }, { 8, 5, 2 } };
+                }
+                else
+                {
+                    matFormation = new int[,] { { 0, 1, 2 }, { 3, 4, 5 }, { 6, 7, 8 } };
+                }
+            }
+            
+
+            for (int y = 0; y < 3; ++y)
+            {
+                for( int x=0;x<3;++x)
+                {
+                    formation[y * 3 + x] = members[(int)matFormation[y,x]];
+                }
+            }
+        }
+
+        public void UpdateMembersRotation()
+        {
+            foreach (var mem in members)
+            {
+                if( mem != null )
+                {
+                    mem.SetRotation(rotation);
+                }
+            }
+        }
+
         public Vector3 GetMemberPosition( int i )
         {
             return GetMemberPosition(i% 3, i / 3);
@@ -88,16 +145,7 @@ namespace JGame
 
             Rotate(position - DestPos);
 
-            // set members position
-            for (int i = 0; i < members.Length; ++i)
-            {
-                // {{ @Test
-                if (members[i] != null)
-                {
-                    members[i].transform.position = GetMemberPosition(i);
-                }
-                // }} @Test
-            }
+            UpdateMembersPosition();
         }
         #region rotate
         public void Rotate( IntRect r)
@@ -120,13 +168,9 @@ namespace JGame
 
             rotation.Normalize();
 
-            for (int i = 0; i < members.Length; ++i)
-            {
-                if (members[i] != null)
-                {
-                    members[i].SetRotation(rotation);
-                }
-            }
+            UpdateSquadFormation();
+            UpdateMembersRotation();
+            UpdateMembersPosition();
         }
         #endregion
 

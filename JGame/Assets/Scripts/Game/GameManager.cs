@@ -187,6 +187,7 @@ namespace JGame
             // {{ @Test
             HeroInfo info = new HeroInfo();
             info.name = "name" + Obj.name;
+            info.soldiers[3] = info.soldiers[4] = info.soldiers[5] = 1;
             // }} @Test
             hero.InitializeFromInfo(info);
         }

@@ -97,6 +97,7 @@ namespace JGame.Data
 
             // {{ @Test
             defaultSoldiers.Add(0,Resources.Load<GameObject>("Prefab/Units/SwordMan"));
+            defaultSoldiers.Add(1, Resources.Load<GameObject>("Prefab/Units/Archer"));
             // }} @Test
 
             isReady = true;
