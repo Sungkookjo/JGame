@@ -112,8 +112,6 @@ namespace JGame
             {
                 yield break;
             }
-
-            yield return null;
             
             var wnd = MessageUI.GetComponent<UIPanel_MessageBox_YN>();
 
@@ -151,8 +149,8 @@ namespace JGame
 
         public void OnClick_Surrender()
         {
-            SetShowOptionWnd(false);
             StartCoroutine(MessageBox_Surrender());
+            SetShowOptionWnd(false);
         }
         #endregion
     }

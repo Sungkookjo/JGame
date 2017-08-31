@@ -46,17 +46,6 @@ namespace JGame
             }
         }
 
-        protected override void InitFromAwake()
-        {
-            base.InitFromAwake();
-            UIManager_InGame mgr = (UIManager_InGame)UIManager.instance;
-
-            if( mgr != null )
-            {
-                mgr.selectedObjStat = this;
-            }
-        }
-
         protected override void InitFromStart()
         {
             base.InitFromStart();

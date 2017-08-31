@@ -105,7 +105,8 @@ MonoBehaviour:
   attack: 0
   defence: 0
   hasDirAnim: 0
-  iconImg: {fileID: 21300000, guid: 2b82602368383194ca562ca92560b994, type: 3}
+  iconImg: {fileID: 21300000, guid: d4a28d0a5e54d0c4286c527f11c7d571, type: 3}
+  level: 0
 --- !u!212 &212273875762102174
 SpriteRenderer:
   m_ObjectHideFlags: 1
