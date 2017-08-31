@@ -6,6 +6,7 @@ namespace JGame
 {
     public class UIPanel_Ingame_SelectStatus : UIPanel
     {
+        public UIPanel_3x3 cell3x3 = null;
         GameObject selection;
 
         public void SetSelection( GameObject obj )
@@ -24,9 +25,20 @@ namespace JGame
 
             selection = obj;
 
-            if(selection != null )
+            Hero hero = null;
+
+            if (selection != null)
+            {
+                hero = selection.GetComponent<Hero>();
+            }
+            
+            if(selection != null && hero != null )
             {
                 gameObject.SetActive(true);
+                if (cell3x3 != null)
+                {
+                    cell3x3.SetHeroInfo(hero);
+                }
             }
             else
             {

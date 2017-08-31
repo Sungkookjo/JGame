@@ -187,7 +187,10 @@ namespace JGame
             // {{ @Test
             HeroInfo info = new HeroInfo();
             info.name = "name" + Obj.name;
-            info.soldiers[3] = info.soldiers[4] = info.soldiers[5] = 1;
+            for(int i = 0; i<9;++i)
+            {
+                info.soldiers[i] = Random.Range(0, 2);
+            }
             // }} @Test
             hero.InitializeFromInfo(info);
         }
@@ -353,6 +356,17 @@ namespace JGame
         public void RemoveController(Controller ctr)
         {
             allController.Remove(ctr);
+        }
+
+        public void Surrender()
+        {
+            //{{@Test
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+            //}}@Test
         }
     }
 }

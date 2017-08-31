@@ -202,5 +202,15 @@ namespace JGame
         {
             SetRotation(target - position);
         }
+
+        public IEnumerable<Soldier> GetSoldiers(bool bFormation )
+        {
+            if(bFormation )
+            {
+                return formation;
+            }
+
+            return members;
+        }
     }
 }

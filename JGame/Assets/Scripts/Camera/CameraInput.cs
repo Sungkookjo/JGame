@@ -33,7 +33,7 @@ namespace JGame
                 var size = cam.orthographicSize;
 
                 // resize
-                size -= GetScaleDelta();                
+                size += GetScaleDelta();                
                 cam.orthographicSize = ClampScale(size);
 
                 return true;

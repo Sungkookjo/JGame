@@ -9,16 +9,13 @@ namespace JGame
         public bool hasDirAnim;
         protected IntRect rotation = new IntRect();
 
-        // Use this for initialization
-        void Start()
+        public Sprite iconImg;
+
+        public byte level;
+
+        public bool IsAlivedAndWell()
         {
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
+            return true;
         }
 
         #region Rotate

@@ -8,6 +8,9 @@ namespace JGame
     {
         public GameObject NormalHUD;
         public GameObject BattleHUD;
+        public GameObject MessageUI;
+        public GameObject OptionWnd;
+
         public UIPanel_Ingame_Command commandMenu;
         public UIPanel_Ingame_SelectStatus selectedObjStat;
         public UIPanel_Ingame_SelectStatus curHeroStat;
@@ -95,6 +98,42 @@ namespace JGame
             }
         }
 
+        public void SetShowOptionWnd(bool bShow)
+        {
+            if(OptionWnd != null)
+            {
+                OptionWnd.SetActive(bShow);
+            }
+        }
+
+        protected IEnumerator MessageBox_Surrender()
+        {
+            if( MessageUI == null )
+            {
+                yield break;
+            }
+
+            yield return null;
+            
+            var wnd = MessageUI.GetComponent<UIPanel_MessageBox_YN>();
+
+            if (wnd != null)
+            {
+                wnd.ShowMsgBox("L_Ask_Surrender");
+
+                while ( wnd.IsWorking() )
+                {
+                    yield return new WaitForSeconds(0.1f);
+                }
+
+                if (wnd.IsYes())
+                {
+                    GameManager.instance.Surrender();
+                }
+            }
+        }
+
+        #region UIFunc
         public void OnClick_PassTurn()
         {
             GameManager.instance.localController.PassCurrentHeroTurn();
@@ -107,6 +146,14 @@ namespace JGame
 
         public void OnClick_Option()
         {
+            SetShowOptionWnd(true);
         }
+
+        public void OnClick_Surrender()
+        {
+            SetShowOptionWnd(false);
+            StartCoroutine(MessageBox_Surrender());
+        }
+        #endregion
     }
 }

@@ -139,6 +139,11 @@ namespace JGame
             squad.UpdateMembersPosition();
         }
 
+        public IEnumerable<Soldier> GetSoldiers(bool bFormation)
+        {
+            return squad.GetSoldiers(bFormation);
+        }
+
         // set owner
         public void SetOwner( Controller newOwner)
         {

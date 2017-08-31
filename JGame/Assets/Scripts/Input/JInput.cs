@@ -112,7 +112,7 @@ namespace JGame
 
         public override float GetResizingDelta()
         {
-            return Input.GetAxis("Mouse ScrollWheel");
+            return -Input.GetAxis("Mouse ScrollWheel");
         }
 
         public override bool IsButtonDragging(int btIndex)
