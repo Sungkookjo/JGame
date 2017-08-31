@@ -7,9 +7,15 @@ namespace JGame
 {
     public class Controller : Actor
     {
+        // cached object when button down
         GameObject btDownObj = null;
+
+        // cached object last selected
         GameObject selectedObj = null;
+
+        // selected tile arlram
         GameObject arlramObj = null;
+
         bool lockSelect = false;
 
         Hero curHero = null;
@@ -25,13 +31,13 @@ namespace JGame
         public bool isAuto = false;
 
         // change team
-        public override void SetTeam( Team newTeam )
+        public override void SetTeam(Team newTeam)
         {
             base.SetTeam(newTeam);
 
             if (team == newTeam) return;
 
-            for( int i = 0; i < teamHeros.Count; ++i )
+            for (int i = 0; i < teamHeros.Count; ++i)
             {
                 var hero = teamHeros[i].GetComponent<Hero>();
 
@@ -50,7 +56,7 @@ namespace JGame
             curHeroIndex = 0;
             curHero = null;
 
-            for ( int i = 0; i < teamHeros.Count; ++i )
+            for (int i = 0; i < teamHeros.Count; ++i)
             {
                 teamHeros[i].GetComponent<Hero>().BeginTurn();
             }
@@ -59,50 +65,70 @@ namespace JGame
             _isTurnEnded = false;
         }
 
+        protected bool NeedPassHeroTurn()
+        {
+            return _passHeroTurn || curHero == null || curHero.isTurnEnded;
+        }
+
         // update turn
         public IEnumerator CalcTurn()
         {
             yield return null;
 
+            // it's my turn
             while (!isTurnEnded)
             {
                 _passHeroTurn = false;
 
                 curHero = teamHeros[curHeroIndex].GetComponent<Hero>();
 
-                GameManager.instance.cameraInput.SetPosition(curHero.transform.position);
-
-                while ( !curHero.isTurnEnded && !_passHeroTurn )
+                if (curHero != null)
                 {
+                    GameManager.instance.cameraInput.SetPosition(curHero.transform.position);
+                }
+
+                // hero turn
+                while ( !NeedPassHeroTurn() )
+                {
+                    Map.instance.SetCurrentHeroGuide(true, curHero.transform.position);
+                    UIManager.instance.SetSelection(UIWindow.Status_Hero, curHero.gameObject);
+                    Map.instance.EnableRangeTiles(curHero.position, curHero.moveRange);
+
                     yield return null;
 
-                    UIManager.instance.SetSelection(UIWindow.Status_Hero, curHero.gameObject);
-
-                    if (isAuto)
+                    // Do Command
+                    while(!NeedPassHeroTurn())
                     {
-                        // DO Auto
-                        curHero.EndTurn();
-                    }
-                    else
-                    {
-                        Map.instance.EnableRangeTiles(curHero.position, curHero.moveRange );
-
-                        // process cmd
-                        if (selectedObj != null)
+                        if (isAuto)
                         {
-                            lockSelect = true;
-
-                            IEnumerator e = WaitSelectedObjCommand();
-
-                            while (e.MoveNext() && !curHero.isTurnEnded && !_passHeroTurn )
-                            {
-                                yield return e.Current;
-                            }
-
-                            yield return null;
-
-                            lockSelect = false;
+                            yield return new WaitForSeconds(0.5f);
+                            // DO Auto
+                            curHero.EndTurn();
+                            break;
                         }
+                        else
+                        {
+                            // process cmd
+                            if (selectedObj != null)
+                            {
+                                lockSelect = true;
+
+                                IEnumerator e = WaitSelectedObjCommand();
+
+                                while (e.MoveNext() && !NeedPassHeroTurn() )
+                                {
+                                    yield return e.Current;
+                                }
+
+                                yield return null;
+
+                                Map.instance.HideDirGuide();
+                                lockSelect = false;
+                                break;
+                            }
+                        }
+
+                        yield return null;
                     }
                 }
 
@@ -114,6 +140,7 @@ namespace JGame
                     curHeroIndex = 0;
                 }
             }
+            Map.instance.SetCurrentHeroGuide(false, Vector3.zero );
 
             yield return null;
         }
@@ -170,6 +197,7 @@ namespace JGame
         // process input
         public bool ProcessInput()
         {
+            // if down
             if (JInputManager.ButtonDown(0))
             {
                 Vector2 wp = Camera.main.ScreenToWorldPoint(JInputManager.GetScreenPosition(0));
@@ -184,6 +212,7 @@ namespace JGame
 
                 return true;
             }
+            // if up
             else if( btDownObj != null && JInputManager.ButtonUp(0) )
             {
                 Vector2 wp = Camera.main.ScreenToWorldPoint(JInputManager.GetScreenPosition(0));
@@ -210,10 +239,17 @@ namespace JGame
         // create arlam object.
         public void CreateArlamObj()
         {
-            arlramObj = ObjectPoolManager.instance.Pop( Resources.Load<GameObject>("Prefab/Map/Arrow") );
+            // create selected tile arlram 
+            if (arlramObj == null)
+            {
+                arlramObj = ObjectPoolManager.instance.Pop(Resources.Load<GameObject>("Prefab/Map/Arrow"));
 
-            if( arlramObj != null )
-                arlramObj.SetActive(false);
+                if (arlramObj != null)
+                {
+                    arlramObj.SetActive(false);
+                    arlramObj.transform.SetParent(transform);
+                }
+            }
         }
 
         // set selected object. 
@@ -260,6 +296,11 @@ namespace JGame
                     curHero.MoveTo(tile);
                     break;
                 case UICmd_Move.Rotate:
+                    e = RotateCmd();
+                    while (e.MoveNext())
+                    {
+                        yield return e.Current;
+                    }
                     break;
                 case UICmd_Move.Cancel:
                     break;
@@ -328,6 +369,33 @@ namespace JGame
 
                 SetSelectedObject(null);
             }
+            yield return null;
+        }
+
+        protected IEnumerator RotateCmd()
+        {
+            SetSelectedObject(null);
+            lockSelect = false;
+            Map.instance.EnableRangeTiles(curHero.position, 1);
+            Map.instance.ShowDirGuide(curHero.position);
+            yield return null;
+
+            while (true)
+            {
+                // if choose dir tile
+                if ( selectedObj != null )
+                {
+                    var tile = selectedObj.GetComponent<Tile>();
+
+                    if (tile != null && tile.isSelecteable)
+                    {
+                        curHero.LookAt(tile.position);
+                        break;
+                    }
+                }                                
+                yield return null;
+            }
+
             yield return null;
         }
 

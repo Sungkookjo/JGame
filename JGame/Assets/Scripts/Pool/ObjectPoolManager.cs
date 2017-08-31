@@ -124,10 +124,7 @@ namespace JGame.Pool
             }
 
             // SetParent( this )
-            if (obj.transform.parent == null)
-            {
-                obj.transform.SetParent(gameObject.transform);
-            }
+            obj.transform.SetParent(gameObject.transform);
 
             // push
             pool[key].Enqueue(obj);

@@ -180,5 +180,10 @@ namespace JGame
         {
             return 2;
         }
+
+        public void LookAt(IntRect target)
+        {
+            squad.LookAt(target);
+        }
     }
 }

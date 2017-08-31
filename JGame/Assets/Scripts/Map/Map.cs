@@ -8,6 +8,11 @@ namespace JGame
 {
     public class Map : MonoBehaviour
     {
+        protected Vector3 topPos = new Vector3();
+
+        // current hero position arlam
+        GameObject heroArlramObj = null;
+
         // x * y
         public IntRect tileNum;
                 
@@ -26,7 +31,10 @@ namespace JGame
         public List<SpawnPoint> spawnPoints = new List<SpawnPoint>();
 
         public GameObject arlramObj;
-        public List<GameObject> arlramlist;
+        public List<GameObject> arlramlist = new List<GameObject>();
+
+        public GameObject dirObj;
+        public List<GameObject> dirList = new List<GameObject>();
 
         // instance
         private static Map _instance = null;
@@ -50,16 +58,74 @@ namespace JGame
         // Use this for initialization
         void Start()
         {
-            arlramObj = Instantiate(Resources.Load<GameObject>("Prefab/Map/Arlram"));
-            arlramObj.GetComponent<SpriteRenderer>().color = new Color(1, 1, 0, 1);
-            arlramObj.GetComponent<SpriteRenderer>().sortingOrder -= 1;
-            arlramObj.SetActive(false);
+            if(arlramObj == null)
+            {
+                arlramObj = Instantiate(Resources.Load<GameObject>("Prefab/Map/Arlram"));
+                if( arlramObj != null )
+                {
+                    arlramObj.GetComponent<SpriteRenderer>().color = new Color(1, 1, 0, 1);
+                    arlramObj.GetComponent<SpriteRenderer>().sortingOrder -= 1;
+                    arlramObj.SetActive(false);
+
+                    arlramObj.transform.SetParent(transform);
+                }
+            }
+
+            if( dirObj == null )
+            {
+                dirObj = Instantiate(Resources.Load<GameObject>("Prefab/Map/Dir"));
+
+                if( dirObj != null )
+                {
+                    dirObj.SetActive(false);
+                    dirObj.transform.SetParent(transform);
+                }
+            }
+
+            // Create hero position arlam
+            if (heroArlramObj == null)
+            {
+                heroArlramObj = ObjectPoolManager.instance.Pop(Resources.Load<GameObject>("Prefab/Map/Arlram"));
+
+                if (heroArlramObj != null)
+                {
+                    var sr = heroArlramObj.GetComponent<SpriteRenderer>();
+
+                    if (sr != null)
+                    {
+                        sr.color = new Color(0, 1, 0);
+                    }
+                    heroArlramObj.SetActive(false);
+                    heroArlramObj.transform.SetParent(transform);
+                }
+            }
+        }
+
+        public void SetCurrentHeroGuide(bool bShow, Vector3 pos)
+        {
+            if (heroArlramObj != null)
+            {
+                heroArlramObj.SetActive(bShow);
+                heroArlramObj.transform.position = pos;
+            }
+        }
+
+        void CreateDirGuide(int x, int y, float angle)
+        {
+            var newObj = ObjectPoolManager.instance.Pop(dirObj);
+            newObj.transform.SetPositionAndRotation(GetTilePosition(x,y), Quaternion.identity);
+            newObj.transform.Rotate(0, 0, angle);
+            newObj.transform.SetParent(transform);
+            newObj.GetComponent<Tile>().position.x = x;
+            newObj.GetComponent<Tile>().position.y = y;
+            dirList.Add(newObj);
         }
 
         void CreateArlram( Vector3 position )
         {
             var newObj = ObjectPoolManager.instance.Pop(arlramObj);
             newObj.transform.position = position;
+            newObj.transform.SetParent(transform);
             arlramlist.Add(newObj);
         }
 
@@ -82,14 +148,14 @@ namespace JGame
 
         public void Initialize(MapData newData)
         {
-            Vector3 top = new Vector3();
             tiles.Clear();
 
             tileNum.x = newData.tileX;
             tileNum.y = newData.tileY;
 
-            top += tileSpacingX * tileNum.x * -0.5f;
-            top += tileSpacingY * tileNum.y * -0.5f;
+            topPos = Vector3.zero;
+            topPos += tileSpacingX * tileNum.x * -0.5f;
+            topPos += tileSpacingY * tileNum.y * -0.5f;
 
             for (int y = 0; y < tileNum.y; ++y)
             {
@@ -119,7 +185,7 @@ namespace JGame
                     // set game object properties
                     obj.name = "tile_" + (tileNum.x * y + x ) + "_" + y + "," + x; // name
                     obj.transform.SetParent(transform); // parent
-                    obj.transform.position = top + (tileSpacingX * x) + (tileSpacingY * y); // position
+                    obj.transform.position = topPos + (tileSpacingX * x) + (tileSpacingY * y); // position
 
                     var tile = obj.GetComponent<Tile>();
                     tile.position.x = x;
@@ -156,7 +222,7 @@ namespace JGame
                 // set game object properties
                 obj.name = "SpawnPoint_" + i + "_team"+ newData.SpawnPoints[i].teamIndex; // name
                 obj.transform.SetParent(transform); // parent
-                obj.transform.position = top + (tileSpacingX * newData.SpawnPoints[i].tileX) + (tileSpacingY * newData.SpawnPoints[i].tileY); // position
+                obj.transform.position = topPos + (tileSpacingX * newData.SpawnPoints[i].tileX) + (tileSpacingY * newData.SpawnPoints[i].tileY); // position
 
                 var spawnPoint = obj.GetComponent<SpawnPoint>();
                 spawnPoint.position.x = newData.SpawnPoints[i].tileX;
@@ -181,6 +247,16 @@ namespace JGame
             }
 
             return tiles[y * tileNum.x + x];
+        }
+
+        public Vector3 GetTilePosition(IntRect pos)
+        {
+            return GetTilePosition(pos.x, pos.y);
+        }
+
+        public Vector3 GetTilePosition(int x, int y)
+        {
+            return (topPos + (tileSpacingX * x) + (tileSpacingY * y));
         }
 
         public void LeaveFrom( IntRect pos, GameObject obj )
@@ -259,6 +335,23 @@ namespace JGame
                     }
                 }
             }
+        }
+
+        public void ShowDirGuide(IntRect pivot)
+        {
+            CreateDirGuide(pivot.x - 1, pivot.y, 45.0f);
+            CreateDirGuide(pivot.x + 1, pivot.y, -135.0f);
+            CreateDirGuide(pivot.x , pivot.y + 1, 135.0f);
+            CreateDirGuide(pivot.x , pivot.y - 1, -45.0f);
+        }
+
+        public void HideDirGuide()
+        {
+            foreach (GameObject obj in dirList)
+            {
+                ObjectPoolManager.instance.Push(obj);
+            }
+            dirList.Clear();
         }
     }
 }

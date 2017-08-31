@@ -143,16 +143,16 @@ namespace JGame
             position.x = x;
             position.y = y;
 
-            Rotate(position - DestPos);
+            SetRotation(position - DestPos);
 
             UpdateMembersPosition();
         }
         #region rotate
-        public void Rotate( IntRect r)
+        public void SetRotation( IntRect r)
         {
-            Rotate(r.x, r.y);
+            SetRotation(r.x, r.y);
         }
-        public void Rotate(int x, int y)
+        public void SetRotation(int x, int y)
         {
             rotation.x = x;
             rotation.y = y;
@@ -196,6 +196,11 @@ namespace JGame
         public int GetMoveRange()
         {
             return 2;
+        }
+
+        public void LookAt(IntRect target)
+        {
+            SetRotation(target - position);
         }
     }
 }
