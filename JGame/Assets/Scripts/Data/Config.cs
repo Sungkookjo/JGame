@@ -4,6 +4,9 @@ namespace JGame
 {
     public class Config
     {
+        public const int scene_MainMenu = 0;
+        public const int scene_InGame = 1;
+
         public const int MaxSoldierNum = 9; // 3x3
 
         // Team Index

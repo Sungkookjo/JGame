@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace JGame
 {
     public class UIPanel_Ingame_SelectStatus : UIPanel
     {
+        public Text txtName;
         public UIPanel_3x3 cell3x3 = null;
         GameObject selection;
 
@@ -34,7 +36,12 @@ namespace JGame
             
             if(selection != null && hero != null )
             {
-                gameObject.SetActive(true);
+                if(txtName != null )
+                {
+                    txtName.text = hero.name;
+                }
+
+                SetActive(true);
                 if (cell3x3 != null)
                 {
                     cell3x3.SetHeroInfo(hero);
@@ -42,14 +49,14 @@ namespace JGame
             }
             else
             {
-                gameObject.SetActive(false);
+                SetActive(false);
             }
         }
 
         protected override void InitFromStart()
         {
             base.InitFromStart();
-            gameObject.SetActive(false);
+            SetActive(false,true);
         }
     }
 }

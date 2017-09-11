@@ -56,7 +56,10 @@ namespace JGame
         // can attack
         public bool CanAttack(Hero other)
         {
-            return !team.IsSameTeam(other.team);
+            //{{@test
+            return true;
+            //}}@test
+            //return !team.IsSameTeam(other.team);
         }
 
         public bool CanMoveTo(Tile tile)

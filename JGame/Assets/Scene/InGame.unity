@@ -1250,6 +1250,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resizeByResolution: 0
+  activateAnimType: 0
+  activateAnimTime: 0.1
+  deactivateAnimType: 0
+  deactivateAnimTime: 0.1
   text: {fileID: 999985141}
 --- !u!1 &376224702
 GameObject:
@@ -1301,6 +1305,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resizeByResolution: 1
+  activateAnimType: 0
+  activateAnimTime: 0.1
+  deactivateAnimType: 0
+  deactivateAnimTime: 0.1
 --- !u!114 &376224705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4804,6 +4812,26 @@ Prefab:
       propertyPath: m_SizeDelta.y
       value: 72
       objectReference: {fileID: 0}
+    - target: {fileID: 114971470327551536, guid: c8c86a740309f764ca7e416378ff6247,
+        type: 2}
+      propertyPath: activateAnimType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971470327551536, guid: c8c86a740309f764ca7e416378ff6247,
+        type: 2}
+      propertyPath: deactivateAnimType
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971470327551536, guid: c8c86a740309f764ca7e416378ff6247,
+        type: 2}
+      propertyPath: activateAnimTime
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 114971470327551536, guid: c8c86a740309f764ca7e416378ff6247,
+        type: 2}
+      propertyPath: deactivateAnimTime
+      value: 0.02
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c8c86a740309f764ca7e416378ff6247, type: 2}
   m_IsPrefabParent: 0
@@ -4890,6 +4918,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resizeByResolution: 0
+  activateAnimType: 3
+  activateAnimTime: 0.02
+  deactivateAnimType: 4
+  deactivateAnimTime: 0.02
   attCmd_Att: {fileID: 768168232}
   attCmd_Throw: {fileID: 783353523}
   attCmd_Cancel: {fileID: 687484475}
@@ -6436,6 +6468,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resizeByResolution: 1
+  activateAnimType: 0
+  activateAnimTime: 0.1
+  deactivateAnimType: 0
+  deactivateAnimTime: 0.1
 --- !u!1 &1989814201
 GameObject:
   m_ObjectHideFlags: 0

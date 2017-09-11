@@ -77,36 +77,31 @@ namespace JGame
 
         public void UpdateSquadFormation()
         {
-            int[,] matFormation = null;
-            if( rotation.x == -1 )
-            {
-                if (rotation.y == 1)
-                {
-                    matFormation = new int[,] { { 8, 7, 6 }, { 5, 4, 3 }, { 2, 1, 0 } };
-                }
-                else
-                {
-                    matFormation = new int[,] { { 2, 5, 8 }, { 1, 4, 7 }, { 0, 3, 6 } };
-                }
-            }
-            else
-            {
-                if (rotation.y == 1)
-                {
-                    matFormation = new int[,] { { 6, 3, 0 }, { 7, 4, 1 }, { 8, 5, 2 } };
-                }
-                else
-                {
-                    matFormation = new int[,] { { 0, 1, 2 }, { 3, 4, 5 }, { 6, 7, 8 } };
-                }
-            }
-            
+            var dir = new Vector3(rotation.x,rotation.y, 0);
+            var front = new Vector3(0, -1, 0);
+            var angle = Vector3.Angle(front, dir);
 
-            for (int y = 0; y < 3; ++y)
+            // reflection.
+            if ( rotation.x < 0 )
             {
-                for( int x=0;x<3;++x)
+                angle = -angle;
+            }
+
+            for ( int y = -1;y<2;++y) // -1 ~ 1
+            {
+                for(int x=-1;x<2;++x) // -1 ~ 1
                 {
-                    formation[y * 3 + x] = members[(int)matFormation[y,x]];
+                    var v = new Vector3(x, y, 0);
+
+                    // rotate
+                    v = Quaternion.Euler(0, 0, angle) * v;
+
+                    IntRect ir;
+                    ir.x = (int)Mathf.Round(v.x) + 1;
+                    ir.y = (int)Mathf.Round(v.y) + 1;
+
+                    // set members
+                    formation[ir.y * 3 + ir.x] = members[((y+1)*3)+ (x+1)];
                 }
             }
         }
@@ -156,15 +151,6 @@ namespace JGame
         {
             rotation.x = x;
             rotation.y = y;
-
-            if (x == 0)
-            {
-                rotation.x = -y;
-            }
-            if (y == 0)
-            {
-                rotation.y = x;
-            }
 
             rotation.Normalize();
 

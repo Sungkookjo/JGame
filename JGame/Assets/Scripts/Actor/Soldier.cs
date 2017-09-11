@@ -28,20 +28,19 @@ namespace JGame
         {
             rotation.x = x;
             rotation.y = y;
-
-            if( !hasDirAnim )
+            
+            if ( !hasDirAnim )
             {
                 Vector3 angle = new Vector3(0, 0, 15);
                 Vector3 scale = new Vector3(1, 1, 1);
 
-                if (y > 0)
-                {
-                    angle.z *= -1.0f;
-                }
-
-                if (x < 0)
+                if( y == 0 )
                 {
                     angle *= -1.0f;
+                }
+
+                if (x < 0 || y > 0 )
+                {
                     scale.x *= -1.0f;
                 }
 

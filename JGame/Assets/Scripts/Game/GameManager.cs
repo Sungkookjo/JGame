@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using JGame.Pool;
 using JGame.Data;
@@ -362,9 +363,9 @@ namespace JGame
         {
             //{{@Test
 #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
+            SceneManager.LoadScene(Config.scene_MainMenu);
 #else
-            Application.Quit();
+            SceneManager.LoadScene(Config.scene_MainMenu);
 #endif
             //}}@Test
         }

@@ -38,10 +38,9 @@ namespace JGame
 
         public GameObject attackCommand;
         public GameObject moveCommand;
-
-        protected override void InitFromAwake()
+        
+        protected override void InitFromStart()
         {
-            base.InitFromAwake();
             UIManager_InGame mgr = (UIManager_InGame)UIManager.instance;
 
             if (mgr != null)
@@ -49,10 +48,15 @@ namespace JGame
                 mgr.commandMenu = this;
             }
 
+            base.InitFromStart();
+
+            SetActive(false , true);
+            SetShowAllWindows(false);
+
             // attack command - attack
-            if(attCmd_Att != null)
+            if (attCmd_Att != null)
             {
-                attCmd_Att.onClick.AddListener( () => { selectedBtIndex = (int)UICmd_Attack.Attack; });
+                attCmd_Att.onClick.AddListener(() => { selectedBtIndex = (int)UICmd_Attack.Attack; });
             }
 
             // attack command - throw
@@ -86,13 +90,6 @@ namespace JGame
             }
         }
 
-        protected override void InitFromStart()
-        {
-            base.InitFromStart();
-            SetActive(false);
-            SetShowAllWindows(false);
-        }
-
         public IEnumerator ShowWindow( int param1 )
         {
             selectedBtIndex = -1;
@@ -116,11 +113,6 @@ namespace JGame
 
             yield return selectedBtIndex;
 
-        }
-
-        public void SetActive( bool bShow )
-        {
-            gameObject.SetActive(bShow);
         }
 
         protected void SetShowAllWindows(bool bShow)
