@@ -6,8 +6,6 @@ namespace JGame
 {
     abstract public class UIObject : MonoBehaviour
     {
-        public bool resizeByResolution;
-
         private void Awake()
         {
             InitFromAwake();
@@ -27,7 +25,7 @@ namespace JGame
 
         protected virtual void InitFromStart()
         {
-            Resize();
+            Resizing();
         }
 
         // instantiated
@@ -47,7 +45,7 @@ namespace JGame
             UIManager.instance.RemoveUIObject(this);
         }
 
-        public abstract void Resize();
+        public abstract void Resizing();
     }
 
 }

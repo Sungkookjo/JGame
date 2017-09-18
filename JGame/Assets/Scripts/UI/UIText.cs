@@ -13,7 +13,7 @@ namespace JGame
 
         protected string textStr;
         protected Text text; // default text. for localizing
-        protected float size; // default size. for resize
+        protected float fontSize; // default size. for resize
         
         protected override void InitFromAwake()
         {
@@ -25,10 +25,7 @@ namespace JGame
                 textStr = text.text;
             }
 
-            if( resizeByResolution )
-            {
-                size = text.fontSize;
-            }
+            fontSize = text.fontSize;
 
             base.InitFromAwake();
         }
@@ -49,10 +46,10 @@ namespace JGame
             }
         }
 
-        public override void Resize()
+        public override void Resizing()
         {
             float newSize = JUtil.GetMinResRatio();
-            text.fontSize = (int)(newSize * size);
+            text.fontSize = (int)(newSize * fontSize);
         }
     }
 }

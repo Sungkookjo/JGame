@@ -8,10 +8,25 @@ namespace JGame
     public enum UIPanel_AnimType
     {
         None,
-        LeftToRight,
-        RightToLeft,
+        FromRight,
+        FromLeft,
+        ToRight,
+        ToLeft,
+        FromUpper,
+        FromBottom,
+        ToUpper,
+        ToBottom,
         ScaleUp,
         ScaleDown,
+    }
+
+    [System.Serializable]
+    public enum EUIResizeType
+    {
+        None,
+        EachByResolution,
+        AllByBigResolutionRatio,
+        AllBySmallResolutionRatio,
     }
 
     public class UIPanel : UIObject
@@ -25,17 +40,18 @@ namespace JGame
         protected IEnumerator activeCoroutine = null;
         #endregion
 
+        // {{ resize properties
+        public EUIResizeType resizeType = EUIResizeType.None;
         protected RectTransform rectTransform;
-        protected Vector2 rectSize;
+        protected Vector2 cachedRectSize;
+        protected Vector2 cachedRectPosition;
+        // }} resize properties
 
         protected override void InitFromAwake()
         {
-            rectTransform = GetComponent<RectTransform>();
-
-            if( resizeByResolution )
-            {
-                rectSize = rectTransform.sizeDelta;
-            }
+            rectTransform = transform as RectTransform;
+            cachedRectSize = rectTransform.sizeDelta;
+            cachedRectPosition = rectTransform.anchoredPosition;
 
             base.InitFromAwake();
         }
@@ -45,12 +61,38 @@ namespace JGame
             base.InitFromStart();
         }
 
-        public override void Resize()
+        public Vector2 GetResizingSize(ref Vector2 size, EUIResizeType type)
         {
-            if( resizeByResolution )
+            if (type == EUIResizeType.None) return size;
+
+            Vector2 retval = size;
+
+            switch (type)
             {
-                var newSize = rectSize;
-                newSize *= JUtil.GetMinResRatio();
+                case EUIResizeType.EachByResolution:
+                    retval.x *= JUtil.GetResRatioX();
+                    retval.y *= JUtil.GetResRatioY();
+                    break;
+                case EUIResizeType.AllByBigResolutionRatio:
+                    retval *= JUtil.GetMaxResRatio();
+                    break;
+                case EUIResizeType.AllBySmallResolutionRatio:
+                    retval *= JUtil.GetMinResRatio();
+                    break;
+                default:
+                    break;
+            }
+
+            return retval;
+        }
+
+        public override void Resizing()
+        {
+            if( resizeType != EUIResizeType.None )
+            {
+                var newSize = cachedRectSize;
+
+                newSize = GetResizingSize(ref newSize, resizeType);
 
                 rectTransform.sizeDelta = newSize;
             }
@@ -121,45 +163,117 @@ namespace JGame
             }
 
             yield return null;
-
-            var duration = animTime;
+            
+            IEnumerator e = null;
 
             switch(animType)
             {
-                case UIPanel_AnimType.LeftToRight:
+                case UIPanel_AnimType.FromRight:
+                        e = MoveAnim(animTime,
+                            rectTransform.sizeDelta.x , 0,
+                            0,0
+                            );
                     break;
-                case UIPanel_AnimType.RightToLeft:
+                case UIPanel_AnimType.FromLeft:
+                    e = MoveAnim(animTime,
+                            -rectTransform.sizeDelta.x, 0,
+                            0, 0
+                            );
+                    break;
+                case UIPanel_AnimType.ToRight:
+                    e = MoveAnim(animTime,
+                            0,0,
+                            rectTransform.sizeDelta.x, 0
+                            );
+                    break;
+                case UIPanel_AnimType.ToLeft:
+                    e = MoveAnim(animTime,
+                            0, 0,
+                            -rectTransform.sizeDelta.x, 0
+                            );
+                    break;
+                case UIPanel_AnimType.FromUpper:
+                    e = MoveAnim(animTime,
+                            0, rectTransform.sizeDelta.y,
+                            0, 0
+                            );
+                    break;
+                case UIPanel_AnimType.FromBottom:
+                    e = MoveAnim(animTime,
+                            0, -rectTransform.sizeDelta.y,
+                            0, 0
+                            );
+                    break;
+                case UIPanel_AnimType.ToUpper:
+                    e = MoveAnim(animTime,
+                            0, 0,
+                            0, rectTransform.sizeDelta.y
+                            );
+                    break;
+                case UIPanel_AnimType.ToBottom:
+                    e = MoveAnim(animTime,
+                            0, 0,
+                            0, -rectTransform.sizeDelta.y
+                            );
                     break;
                 case UIPanel_AnimType.ScaleDown:
-                    {
-                        var scale = transform.localScale.x;
-                        transform.localScale = new Vector3(scale, scale, scale);
-                        yield return null;
-                        while (duration > 0.0f)
-                        {
-                            duration -= Time.deltaTime;
-                            scale = Mathf.Max(0.0f, scale - (Time.deltaTime * (1.0f / animTime)));
-                            transform.localScale = new Vector3(scale, scale, scale);
-                            yield return null;
-                        }
-                    }
+                    e = ScaleAnim(animTime,
+                        1, 1,
+                        0, 0);
                     break;
                 case UIPanel_AnimType.ScaleUp:
-                    {
-                        var scale = transform.localScale.x;
-                        transform.localScale = new Vector3(scale, scale, scale);
-                        yield return null;
-                        while (duration > 0.0f)
-                        {
-                            duration -= Time.deltaTime;
-                            scale = Mathf.Min(1.0f, scale + (Time.deltaTime * (1.0f / animTime)));
-                            transform.localScale = new Vector3(scale, scale, scale);
-                            yield return null;
-                        }
-                    }
+                    e = ScaleAnim(animTime,
+                        0, 0,
+                        1, 1);
                     break;
             }
+
+            if( e != null )
+            {
+                while(e.MoveNext() )
+                {
+                    yield return e.Current;
+                }
+            }
+        }
+
+        protected IEnumerator MoveAnim(float time, float startX, float startY, float endX, float endY)
+        {
+            var newPosition = cachedRectPosition + new Vector2(startX, startY);
+            var lerpSpeed = new Vector2((endX - startX) / time, (endY - startY) / time);
+
+            rectTransform.anchoredPosition = newPosition;
+
+            yield return null;
+
+            while (time > 0.0f)
+            {
+                time -= Time.deltaTime;
+
+                newPosition.x = Mathf.Clamp(newPosition.x + lerpSpeed.x * Time.deltaTime, Mathf.Min(startX, endX), Mathf.Max(startX, endX));
+                newPosition.y = Mathf.Clamp(newPosition.y + lerpSpeed.y * Time.deltaTime, Mathf.Min(startY, endY), Mathf.Max(startY, endY));
+
+                rectTransform.anchoredPosition = newPosition;
+                yield return null;
+            }
+        }
+
+        protected IEnumerator ScaleAnim(float time, float startX,float startY, float endX,float endY)
+        {
+            var newScale = new Vector3(startX, startY, 1.0f);
+            var lerpSpeed = new Vector2((endX - startX) / time, (endY - startY) / time);
+            transform.localScale = newScale;
+
+            yield return null;
+
+            while (time > 0.0f)
+            {
+                time -= Time.deltaTime;
+                newScale.x = Mathf.Clamp(newScale.x + lerpSpeed.x * Time.deltaTime, Mathf.Min(startX, endX), Mathf.Max(startX, endX));
+                newScale.y = Mathf.Clamp(newScale.y + lerpSpeed.y * Time.deltaTime, Mathf.Min(startY, endY), Mathf.Max(startY, endY));
+                transform.localScale = newScale;
+                yield return null;
+            }            
         }
     }
-
 }

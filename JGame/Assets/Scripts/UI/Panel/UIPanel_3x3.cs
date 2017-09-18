@@ -76,18 +76,19 @@ namespace JGame
             }
         }
 
-        public override void Resize()
+        public override void Resizing()
         {
-            base.Resize();
+            base.Resizing();
 
-            if (resizeByResolution)
+            if (resizeType != EUIResizeType.None)
             {
                 var gridGroup = gameObject.GetComponent<GridLayoutGroup>();
 
                 if (gridGroup != null)
                 {
                     var newSize = cellSizeRect;
-                    newSize *= JUtil.GetMinResRatio();
+
+                    newSize = GetResizingSize( ref newSize, resizeType );
 
                     gridGroup.cellSize = newSize;
                 }
