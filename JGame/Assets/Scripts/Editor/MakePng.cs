@@ -53,7 +53,7 @@ public class MakePng : MonoBehaviour
             var file = Application.dataPath + "/Units/" + className + "/" + className + "_" + filepath + i + ".png";
 
             // screen shot
-            Application.CaptureScreenshot(file);
+            ScreenCapture.CaptureScreenshot(file);
 
             yield return new WaitForSeconds(animTurm);
         }

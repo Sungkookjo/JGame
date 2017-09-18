@@ -4,10 +4,8 @@ JGame/Library/
 JGame/Temp/
 
 *.userprefs
-*.csproj
 *.pidb
 *.suo
-*.sln
 *.user
 *.unityproj
 *.booproj
@@ -18,8 +16,15 @@ JGame/Temp/
 .Spotlight-V100
 .Trashes
 Icon?
-ehthumbs.db
-Thumbs.db
+
+//*.csproj
+//*.sln
+//ehthumbs.db
+//Thumbs.db
+
 ExternalTools/DataTransfer/Transfer/obj/
 ExternalTools/DataTransfer/Transfer/bin/
 ExternalTools/DataTransfer/DataTransfer/obj/
+JGame/JGame.csproj
+JGame/JGame.Editor.csproj
+JGame/JGame.sln
