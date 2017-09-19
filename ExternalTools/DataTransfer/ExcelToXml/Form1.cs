@@ -104,8 +104,9 @@ namespace Transfer
                 OleDbCon = new OleDbConnection(conStr);
                 OleDbCon.Open();
             }
-            catch
+            catch (Exception e )
             {
+                MessageBox.Show(e.Message, "Error", MessageBoxButtons.OK);
                 OleDbCon = null;
             }
 
@@ -128,12 +129,12 @@ namespace Transfer
             excelApp.Visible = true;
         }
 
-        public void Localization_ToJson()
+        public bool Localization_ToJson()
         {
             var sheetName = textBox3.Text;
             var Folder = System.IO.Path.GetDirectoryName(curpath);
 
-            if (OleDbCon == null) return;
+            if (OleDbCon == null) return false;
             
             // begin read
             var cmd = OleDbCon.CreateCommand();
@@ -159,6 +160,8 @@ namespace Transfer
                     File.WriteAllText(Folder + "\\" + country[i] +".json", json);
                 }
             }
+
+            return true;
         }
         #endregion
 
@@ -167,7 +170,14 @@ namespace Transfer
         {
             OpenExcel();
 
-            Localization_ToJson();
+            if( Localization_ToJson() )
+            {
+                MessageBox.Show("성공", "결과", MessageBoxButtons.OK);
+            }
+            else
+            {
+                MessageBox.Show("실패","결과",MessageBoxButtons.OK);
+            }
             
             CloseExcel();
         }
