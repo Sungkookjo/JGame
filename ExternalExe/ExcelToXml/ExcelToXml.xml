@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ExcelToXml</name>
+    </assembly>
+    <members>
+        <member name="F:Transfer.Form1.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Transfer.Form1.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Transfer.Form1.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:Transfer.Program.Main">
+            <summary>
+            The main entry point for the application.
+            </summary>
+        </member>
+        <member name="T:ExcelToXml.Properties.Resources">
+            <summary>
+              지역화된 문자열 등을 찾기 위한 강력한 형식의 리소스 클래스입니다.
+            </summary>
+        </member>
+        <member name="P:ExcelToXml.Properties.Resources.ResourceManager">
+            <summary>
+              이 클래스에서 사용하는 캐시된 ResourceManager 인스턴스를 반환합니다.
+            </summary>
+        </member>
+        <member name="P:ExcelToXml.Properties.Resources.Culture">
+            <summary>
+              이 강력한 형식의 리소스 클래스를 사용하여 모든 리소스 조회에 대한 현재 스레드의 CurrentUICulture
+              속성을 재정의합니다.
+            </summary>
+        </member>
+    </members>
+</doc>

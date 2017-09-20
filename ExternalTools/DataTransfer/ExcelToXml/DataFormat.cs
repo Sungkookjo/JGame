@@ -1,12 +1,14 @@
 ﻿
 namespace JGame
 {
+    // localization data class
     [System.Serializable]
     public class LocalizationData
     {
         public LocalizationItem[] items;
     }
 
+    // localization item class
     [System.Serializable]
     public class LocalizationItem
     {
@@ -20,6 +22,7 @@ namespace JGame
         }
     }
 
+    // map data class
     [System.Serializable]
     public class MapData
     {
@@ -29,6 +32,7 @@ namespace JGame
         public int[] datas;
     }
 
+    // spawn data class
     [System.Serializable]
     public class SpawnData
     {

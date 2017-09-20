@@ -28,3 +28,5 @@ ExternalTools/DataTransfer/ExcelToXml/bin/
 JGame/JGame.csproj
 JGame/JGame.Editor.csproj
 JGame/JGame.sln
+*.ide
+*.ide
