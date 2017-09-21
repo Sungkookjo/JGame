@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace JGame
 {
@@ -10,18 +9,12 @@ namespace JGame
         #region UIFunc
         public void OnClick_Play()
         {
-            SceneManager.LoadScene(Config.scene_InGame);
+            JUtil.LoadScene(Config.Scene.Ingame, 1);
         }
 
         public void OnClick_Quit()
         {
-            //{{@Test
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif
-            //}}@Test
+            JUtil.Quit();
         }
         #endregion
     }

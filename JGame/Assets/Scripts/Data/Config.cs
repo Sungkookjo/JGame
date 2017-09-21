@@ -1,11 +1,18 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
+using JGame.Data;
 
 namespace JGame
 {
     public class Config
     {
-        public const int scene_MainMenu = 0;
-        public const int scene_InGame = 1;
+        [System.Serializable]
+        public enum Scene
+        {
+            MainMenu,
+            Loading,
+            Ingame,
+        }
 
         public const int MaxSoldierNum = 9; // 3x3
 
@@ -61,6 +68,22 @@ namespace JGame
 
     public class JUtil
     {
+        public static void Quit()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+        }
+
+        public static void LoadScene( Config.Scene scene, int stage = -1 )
+        {
+            DataController.instance.SetLoadingInfo((int)scene, stage);
+
+            SceneManager.LoadScene( (int)Config.Scene.Loading );
+        }
+
         public static T FindComponent<T>() where T : MonoBehaviour
         {
             string objectName = typeof(T).Name;

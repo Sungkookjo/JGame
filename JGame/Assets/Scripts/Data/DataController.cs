@@ -124,23 +124,6 @@ namespace JGame.Data
             return data;
         }
 
-        // create default game object
-        public static GameObject CreateDataObject<T>() where T : MonoBehaviour
-        {
-            var obj = new GameObject();
-
-            obj.AddComponent<T>();
-
-            DontDestroyOnLoad(obj);
-
-            obj.transform.SetParent( instance.transform );
-            obj.name = typeof(T).Name;
-
-            obj.SetActive(false);
-
-            return obj;
-        }
-
         // get local country
         public string GetCountry()
         {
@@ -160,6 +143,35 @@ namespace JGame.Data
             }
             return GetStrData(Config.key_Country, "kor");
         }
+
+        #region Default Info
+        // create default game object
+        public static GameObject CreateDataObject<T>() where T : MonoBehaviour
+        {
+            var obj = new GameObject();
+
+            obj.AddComponent<T>();
+
+            DontDestroyOnLoad(obj);
+
+            obj.transform.SetParent(instance.transform);
+            obj.name = typeof(T).Name;
+
+            obj.SetActive(false);
+
+            return obj;
+        }
+
+        public GameObject GetDefaultController()
+        {
+            return defaultController;
+        }
+
+        public GameObject GetDefaultHero()
+        {
+            return defaultHero;
+        }
+        #endregion
 
         #region HeroInfo
         public void DeleteHeroInfo(int index)
@@ -202,15 +214,19 @@ namespace JGame.Data
         }
         #endregion // heroInfo
 
-        public GameObject GetDefaultController()
+        #region Loading Info
+        public void SetLoadingInfo( int scene , int stage )
         {
-            return defaultController;
+            SetIntData("Loading_Scene", scene);
+            SetIntData("Loading_Stage", stage);
         }
 
-        public GameObject GetDefaultHero()
+        public void GetLoadingInfo( out int scene, out int stage )
         {
-            return defaultHero;
+            scene = GetIntData("Loading_Scene", 0);
+            stage = GetIntData("Loading_Stage", -1);
         }
+        #endregion
 
         #region Soldiers
         public static Soldier CreateSoliderById( int id )

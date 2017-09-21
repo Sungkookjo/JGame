@@ -361,13 +361,7 @@ namespace JGame
 
         public void Surrender()
         {
-            //{{@Test
-#if UNITY_EDITOR
-            SceneManager.LoadScene(Config.scene_MainMenu);
-#else
-            SceneManager.LoadScene(Config.scene_MainMenu);
-#endif
-            //}}@Test
+            JUtil.LoadScene(Config.Scene.MainMenu);
         }
     }
 }
