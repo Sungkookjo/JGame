@@ -9,7 +9,7 @@ namespace JGame
     [RequireComponent(typeof(Text))]
     public class UIText : UIObject
     {
-        public bool localizeText = false;
+        public bool localizeText = true;
 
         protected string textStr;
         protected Text text; // default text. for localizing
