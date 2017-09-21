@@ -22,7 +22,6 @@ namespace JGame.Localization
         private Dictionary<string, string> localizedText;
 
         private bool isReady = false;
-        private string missingTextString = "Localized text not found";
         
         protected static void CreateInstance()
         {
@@ -66,7 +65,7 @@ namespace JGame.Localization
         // get localized text
         public string GetLocalizedValue(string key)
         {
-            string result = missingTextString;
+            string result = key;
             if (localizedText.ContainsKey(key))
             {
                 result = localizedText[key];
