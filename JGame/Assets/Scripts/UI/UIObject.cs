@@ -15,7 +15,8 @@ namespace JGame
         void Start()
         {
             InitFromStart();
-            UIManager.instance.AddUIObject(this);
+            if(UIManager.instance != null )
+                UIManager.instance.AddUIObject(this);
         }
 
         protected virtual void InitFromAwake()
@@ -36,13 +37,15 @@ namespace JGame
         // Re Use
         public virtual void OnPoolReuse()
         {
-            UIManager.instance.AddUIObject(this);
+            if (UIManager.instance != null)
+                UIManager.instance.AddUIObject(this);
         }
 
         // Release
         public virtual void OnPoolReleased()
         {
-            UIManager.instance.RemoveUIObject(this);
+            if (UIManager.instance != null)
+                UIManager.instance.RemoveUIObject(this);
         }
 
         public abstract void Resizing();
