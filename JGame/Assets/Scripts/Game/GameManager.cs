@@ -69,6 +69,12 @@ namespace JGame
             StartCoroutine(InitializeGame());
         }
 
+        private void OnDestroy()
+        {
+            if (_instance == this)
+                _instance = null;
+        }
+
         private void Start()
         {
             if(cameraInput == null )
@@ -363,5 +369,41 @@ namespace JGame
         {
             JUtil.LoadScene(Config.Scene.MainMenu);
         }
+
+        #region UI->GameManager
+        #region Command
+        public void Command_Attack()
+        {
+            if (controller != null)
+            {
+                controller.SetState(Controller.State.Attack);
+            }
+        }
+
+        public void Command_Throw()
+        {
+            if (controller != null)
+            {
+                controller.SetState(Controller.State.Throw);
+            }
+        }
+
+        public void Command_Move()
+        {
+            if(controller != null)
+            {
+                controller.SetState(Controller.State.Move);
+            }
+        }
+
+        public void Command_Rotate()
+        {
+            if (controller != null)
+            {
+                controller.SetState(Controller.State.Rotate);
+            }
+        }
+        #endregion
+        #endregion
     }
 }

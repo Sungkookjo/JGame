@@ -76,11 +76,6 @@ namespace JGame
 
         public bool MoveTo(Tile tile)
         {
-            if( !CanMoveTo(tile) )
-            {
-                return false;
-            }
-
             // cached curren position
             var destPos = position;
 

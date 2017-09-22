@@ -55,6 +55,12 @@ namespace JGame
             }
         }
 
+        private void OnDestroy()
+        {
+            if (_instance == this)
+                _instance = null;
+        }
+
         // Use this for initialization
         void Start()
         {

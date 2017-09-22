@@ -22,6 +22,12 @@ namespace JGame
             _instance = this;
         }
 
+        private void OnDestroy()
+        {
+            if (_instance == this)
+                _instance = null;
+        }
+
         public void AddUIObject( UIObject ui )
         {
             if( uiObjects.Find( item => item == ui ) != null )
@@ -37,9 +43,9 @@ namespace JGame
             uiObjects.Remove(ui);
         }
 
-        public virtual IEnumerator ShowWindow(UIWindow wnd, int param)
+        public virtual void ShowWindow(UIWindow wnd, int param)
         {
-            yield return null;
+
         }
 
         public virtual void CloseWindow(UIWindow wnd)

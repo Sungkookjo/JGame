@@ -6,11 +6,13 @@ namespace JGame
 {
     public class UIManager_InGame : UIManager
     {
+        [Header("UI Objects")]
         public GameObject NormalHUD;
         public GameObject BattleHUD;
         public GameObject MessageUI;
         public GameObject OptionWnd;
 
+        [Header("UI Scripts")]
         public UIPanel_Ingame_Command commandMenu;
         public UIPanel_Ingame_SelectStatus selectedObjStat;
         public UIPanel_Ingame_SelectStatus curHeroStat;
@@ -26,37 +28,19 @@ namespace JGame
 
         }
 
-        public override IEnumerator ShowWindow(UIWindow wnd, int param1)
+        public override void ShowWindow(UIWindow wnd, int param1)
         {
-            IEnumerator e = null;
-
             switch(wnd)
             {
                 case UIWindow.Command:
                     if( commandMenu != null)
                     {
-                        e = commandMenu.ShowWindow(param1);
+                        commandMenu.ShowWindow(param1);
                     }
                     break;
-            }
-
-            if (e == null)
-            {
-#if UNITY_EDITOR
-                Debug.LogError("UIManager_Ingame::ShowWindow e == null. wnd = "+wnd);
-#endif
-                yield return base.ShowWindow(wnd, param1);
-            }
-            else
-            {
-                object result = null;
-
-                while( e.MoveNext() )
-                {
-                    result = e.Current;
-
-                    yield return result;
-                }
+                default:
+                    base.ShowWindow(wnd, param1);
+                    break;
             }
         }
 

@@ -38,6 +38,7 @@ namespace JGame
         public float deactivateAnimTime = 0.1f;
 
         protected IEnumerator activeCoroutine = null;
+        protected bool _isActive;
         #endregion
 
         // {{ resize properties
@@ -52,6 +53,8 @@ namespace JGame
             rectTransform = transform as RectTransform;
             cachedRectSize = rectTransform.sizeDelta;
             cachedRectPosition = rectTransform.anchoredPosition;
+
+            _isActive = gameObject.activeInHierarchy;
 
             base.InitFromAwake();
         }
@@ -100,10 +103,12 @@ namespace JGame
 
         public void SetActive(bool bShow, bool bSkipAnim = false )
         {
-            if ( bShow == gameObject.activeInHierarchy)
+            if ( bShow == _isActive )
             {
                 return;
             }
+
+            _isActive = bShow;
 
             if (bSkipAnim)
             {

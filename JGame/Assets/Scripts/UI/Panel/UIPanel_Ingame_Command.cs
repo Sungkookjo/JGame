@@ -56,41 +56,29 @@ namespace JGame
             // attack command - attack
             if (attCmd_Att != null)
             {
-                attCmd_Att.onClick.AddListener(() => { selectedBtIndex = (int)UICmd_Attack.Attack; });
+                attCmd_Att.onClick.AddListener(() => { GameManager.instance.Command_Attack(); });
             }
 
             // attack command - throw
             if (attCmd_Throw != null)
             {
-                attCmd_Throw.onClick.AddListener(() => { selectedBtIndex = (int)UICmd_Attack.Throw; });
-            }
-
-            // attack command - cancel
-            if (attCmd_Cancel != null)
-            {
-                attCmd_Cancel.onClick.AddListener(() => { selectedBtIndex = (int)UICmd_Attack.Cancel; });
+                attCmd_Throw.onClick.AddListener(() => { GameManager.instance.Command_Throw(); });
             }
 
             // move command - move
             if (moveCmd_Move != null)
             {
-                moveCmd_Move.onClick.AddListener(() => { selectedBtIndex = (int)UICmd_Move.Move; });
+                moveCmd_Move.onClick.AddListener(() => { GameManager.instance.Command_Move(); });
             }
 
             // move command - rotate
             if (moveCmd_Rotate != null)
             {
-                moveCmd_Rotate.onClick.AddListener(() => { selectedBtIndex = (int)UICmd_Move.Rotate; });
-            }
-
-            // move command - cancel
-            if (moveCmd_Cancel != null)
-            {
-                moveCmd_Cancel.onClick.AddListener(() => { selectedBtIndex = (int)UICmd_Move.Cancel; });
+                moveCmd_Rotate.onClick.AddListener(() => { GameManager.instance.Command_Rotate(); });
             }
         }
 
-        public IEnumerator ShowWindow( int param1 )
+        public void ShowWindow( int param1 )
         {
             selectedBtIndex = -1;
 
@@ -98,21 +86,6 @@ namespace JGame
             SetShowAllWindows(false);
 
             ShowWindow((UIWnd_Cmd)param1);
-            
-            while(selectedBtIndex < 0 )
-            {
-                if( !gameObject.activeInHierarchy )
-                {
-                    selectedBtIndex = 0;
-                }
-
-                yield return null;
-            }
-
-            SetActive(false);
-
-            yield return selectedBtIndex;
-
         }
 
         protected void SetShowAllWindows(bool bShow)
