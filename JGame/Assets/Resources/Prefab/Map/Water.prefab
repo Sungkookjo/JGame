@@ -81,7 +81,9 @@ MonoBehaviour:
   position:
     x: 0
     y: 0
+  type: 2
   actor: {fileID: 0}
+  isSelecteable: 1
 --- !u!212 &212947653387599186
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -123,3 +125,4 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0

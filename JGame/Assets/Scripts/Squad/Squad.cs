@@ -198,5 +198,21 @@ namespace JGame
 
             return members;
         }
+
+        public bool CanMoveToTile(Tile tile)
+        {
+            foreach( var mem in members )
+            {
+                if( mem != null 
+                    && mem.IsAlivedAndWell() 
+                    && ( mem.CanMoveToTile(tile) == false )
+                    )
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 }

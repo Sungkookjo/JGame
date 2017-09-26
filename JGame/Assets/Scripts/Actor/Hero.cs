@@ -188,5 +188,10 @@ namespace JGame
         {
             squad.LookAt(target);
         }
+
+        public bool CanMoveToTile(Tile tile)
+        {
+            return squad.CanMoveToTile(tile);
+        }
     }
 }

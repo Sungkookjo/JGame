@@ -325,8 +325,6 @@ namespace JGame
 
         public void EnableRangeTiles( IntRect position, int range )
         {
-            DisableAllTiles();
-
             for (int y = (position.y - range); y <= (position.y + range); ++y)
             {
                 var gab = range - Mathf.Abs(y - position.y);
@@ -340,6 +338,58 @@ namespace JGame
                         tile.SetSelectable(true);
                     }
                 }
+            }
+        }
+
+        public void EnableCanMoveRangeTiles(IntRect position, int range, Hero hero)
+        {
+            var tile = GetTile(position.x, position.y);
+
+            if (tile != null)
+            {
+                tile.SetSelectable(true);
+            }
+
+            EnableCanMoveRangeTiles(position.x - 1, position.y, position.x, position.y, range, hero);
+            EnableCanMoveRangeTiles(position.x + 1, position.y, position.x, position.y, range, hero);
+            EnableCanMoveRangeTiles(position.x, position.y - 1, position.x, position.y, range, hero);
+            EnableCanMoveRangeTiles(position.x, position.y + 1, position.x, position.y, range, hero);
+        }
+
+        protected void EnableCanMoveRangeTiles(int x, int y, int destX, int destY, int range, Hero hero)
+        {
+            if (range <= 0) return;
+
+            var tile = GetTile(x, y);
+
+            if (tile == null) return;
+
+            if ( false == hero.CanMoveToTile(tile) )
+            {
+                return;
+            }
+
+            CreateArlram(tile.transform.position);
+            tile.SetSelectable(true);            
+
+            if ( false == (x - 1 == destX && y == destY) )
+            {
+                EnableCanMoveRangeTiles(x - 1, y, x, y, range - 1, hero);
+            }
+
+            if (false == (x + 1 == destX && y == destY))
+            {
+                EnableCanMoveRangeTiles(x + 1, y, x, y, range - 1, hero);
+            }
+
+            if (false == (x == destX && y - 1 == destY))
+            {
+                EnableCanMoveRangeTiles(x, y - 1, x, y, range - 1, hero);
+            }
+
+            if (false == (x == destX && y + 1 == destY))
+            {
+                EnableCanMoveRangeTiles(x, y + 1, x, y, range - 1, hero);
             }
         }
 

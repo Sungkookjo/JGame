@@ -6,16 +6,34 @@ namespace JGame
 {
     public class Soldier : Unit
     {
+        [Header("Image")]
+        // in status image.
+        public Sprite iconImg = null;
+
+        [Header("Animation")]
         public bool hasDirAnim;
-        protected IntRect rotation = new IntRect();
+        
+        [Header("Properties")]
+        // can move tile type
+        public List<Tile.TileType> canMoveType = new List<Tile.TileType>();
 
-        public Sprite iconImg;
-
+        // level of soldier
         public byte level;
+
+        protected IntRect rotation = new IntRect();
 
         public bool IsAlivedAndWell()
         {
             return true;
+        }
+
+        public bool CanMoveToTile( Tile tile )
+        {
+            if (tile == null) return false;
+
+            if (tile.actor != null) return false;
+
+            return (canMoveType.FindIndex( type => type == tile.type ) >= 0) ;
         }
 
         #region Rotate

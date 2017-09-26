@@ -240,7 +240,8 @@ namespace JGame
             UIManager.instance.SetSelection(UIWindow.Status_Hero, curHero.gameObject);
 
             // enable moveable tile
-            Map.instance.EnableRangeTiles(curHero.position, curHero.moveRange);
+            Map.instance.DisableAllTiles();
+            Map.instance.EnableCanMoveRangeTiles(curHero.position, curHero.moveRange, curHero );
         }
         protected IEnumerator State_WaitCmd()
         {
@@ -340,6 +341,7 @@ namespace JGame
             SetSelectedObject(null);
 
             // enable only 1x1 tiles
+            Map.instance.DisableAllTiles();
             Map.instance.EnableRangeTiles(curHero.position, 1);
 
             // show direction guide ui

@@ -6,12 +6,24 @@ namespace JGame
 {
     public class Tile : MonoBehaviour
     {
+        [System.Serializable]
+        public enum TileType
+        {
+            Grass,
+            Dirt,
+            Water,
+        };
+
         // tile index (x,y)
         public IntRect position;
 
+        // tile type
+        public TileType type;
+
         // actor on tile
         public GameObject actor;
-        public SpriteRenderer spriteRenderer;
+
+        protected SpriteRenderer spriteRenderer;
 
         public bool isSelecteable = true;
 
