@@ -6,9 +6,15 @@ namespace JGame
 {
     public enum UIWindow
     {
-        Command,
-        Status_Selected,
-        Status_Hero,
+        InGame_Command,
+        InGame_Status_Selected,
+        InGame_Status_Hero,
+    }
+
+    public enum UIHUD
+    {
+        InGame_Normal,
+        InGame_Battle,
     }
 
     public class UIManager : MonoBehaviour
@@ -41,6 +47,15 @@ namespace JGame
         public void RemoveUIObject( UIObject ui )
         {
             uiObjects.Remove(ui);
+        }
+
+        public virtual void ShowHUD( UIHUD hud )
+        {
+
+        }
+
+        public virtual void CloseHUD(UIHUD hud)
+        {
         }
 
         public virtual void ShowWindow(UIWindow wnd, int param)

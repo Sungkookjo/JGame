@@ -289,7 +289,7 @@ namespace JGame
                 controller = GetNextTurnController();
 
                 // set controller auto
-                controller.isAuto = (controller != localController);
+                controller.isAuto = IsAuto( controller );
 
                 // begin turn
                 controller.BeginTurn();
@@ -313,6 +313,11 @@ namespace JGame
                 }
                 yield return null;
             }
+        }
+
+        protected bool IsAuto( Controller ctr )
+        {
+            return (ctr != localController);
         }
 
         protected Controller GetNextTurnController()

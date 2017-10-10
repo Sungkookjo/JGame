@@ -28,21 +28,51 @@ namespace JGame
         GameObject selectedObj = null;
         // selected tile arlram
         GameObject arlramObj = null;
-
-        bool lockSelect = false;
-
+        
         Hero curHero = null;
         int curHeroIndex;
         protected bool _isTurnEnded;
 
         // heros
         protected List<GameObject> teamHeros = new List<GameObject>();
-        
-        protected Controller.State _state = State.EndTurn;
+
         protected IEnumerator coroutine_Update = null;
 
+        protected Controller.State _state = State.EndTurn;
         public Controller.State state { get { return _state; } }
-        
+
+        protected Dictionary<State, MethodInfo> beginStateList = new Dictionary<State, MethodInfo>();
+        protected Dictionary<State, MethodInfo> updateStateList = new Dictionary<State, MethodInfo>();
+        protected Dictionary<State, MethodInfo> endStateList = new Dictionary<State, MethodInfo>();
+
+        private void Awake()
+        {
+            foreach (State e in System.Enum.GetValues( typeof(State) ) )
+            {
+                string stateName = "State_" + e.ToString();
+                System.Type class1Type = GetType();
+                MethodInfo method = class1Type.GetMethod(stateName+"_Begin", BindingFlags.Instance | BindingFlags.NonPublic );
+                if (method != null)
+                {
+                    beginStateList.Add(e, method);
+                }
+
+                method = class1Type.GetMethod(stateName, BindingFlags.Instance | BindingFlags.NonPublic );
+                if (method != null)
+                {
+                    updateStateList.Add(e, method);
+                }
+
+                method = class1Type.GetMethod(stateName + "_End", BindingFlags.Instance | BindingFlags.NonPublic );
+                if (method != null)
+                {
+                    endStateList.Add(e, method);
+                }
+
+                //int result = (int)callMeMethod.Invoke(this, null);
+            }
+        }
+
         // change team
         public override void SetTeam(Team newTeam)
         {
@@ -138,45 +168,29 @@ namespace JGame
 #if UNITY_EDITOR
             Debug.Log("Begin state - " + name + " '" + PrevState.ToString() + "' -> '"+ _state.ToString() + "'");
 #endif
-            switch ( _state )
+            if( beginStateList == null || beginStateList.ContainsKey(_state) == false )
             {
-                case State.BeginTurn:
-                    State_BeginTurn_Begin(PrevState);
-                    break;
-                case State.WaitCmd:
-                    State_WaitCmd_Begin(PrevState);
-                    break;
-                case State.Move:
-                    State_Move_Begin(PrevState);
-                    break;
-                case State.Rotate:
-                    State_Rotate_Begin(PrevState);
-                    break;
-                case State.EndTurn:
-                    State_EndTurn_Begin(PrevState);
-                    break;
+                return;
+            }
+            
+            MethodInfo method = beginStateList[_state];
+            
+            if( method != null )
+            {
+                method.Invoke(this, new object[] { PrevState });
             }
         }
 
         protected IEnumerator GetStateFunc()
         {
-            switch( _state )
+            if (updateStateList != null && updateStateList.ContainsKey(_state) != false)
             {
-                case State.BeginTurn:
-                    yield return State_BeginTurn();
-                    break;
-                case State.WaitCmd:
-                    yield return State_WaitCmd();
-                    break;
-                case State.Move:
-                    yield return State_Move();
-                    break;
-                case State.Rotate:
-                    yield return State_Rotate();
-                    break;
-                case State.EndTurn:
-                    yield return State_EndTurn();
-                    break;
+                MethodInfo method = updateStateList[_state];
+
+                if (method != null)
+                {
+                    yield return method.Invoke(this, null);
+                }
             }
 
             yield return null;
@@ -184,23 +198,16 @@ namespace JGame
 
         protected void DoEndState(Controller.State NextState)
         {
-            switch (_state)
+            if (endStateList == null || endStateList.ContainsKey(_state) == false)
             {
-                case State.BeginTurn:
-                    State_BeginTurn_End(NextState);
-                    break;
-                case State.WaitCmd:
-                    State_WaitCmd_End(NextState);
-                    break;
-                case State.Move:
-                    State_Move_End(NextState);
-                    break;
-                case State.Rotate:
-                    State_Rotate_End(NextState);
-                    break;
-                case State.EndTurn:
-                    State_EndTurn_End(NextState);
-                    break;
+                return;
+            }
+
+            MethodInfo method = endStateList[_state];
+
+            if (method != null)
+            {
+                method.Invoke(this, new object[] { NextState });
             }
         }
         #endregion
@@ -237,7 +244,7 @@ namespace JGame
             Map.instance.SetCurrentHeroGuide(true, curHero.transform.position);
 
             // update hero status ui
-            UIManager.instance.SetSelection(UIWindow.Status_Hero, curHero.gameObject);
+            UIManager.instance.SetSelection(UIWindow.InGame_Status_Hero, curHero.gameObject);
 
             // enable moveable tile
             Map.instance.DisableAllTiles();
@@ -277,16 +284,16 @@ namespace JGame
                             if (other != null && other != curHero)
                             {
                                 // attack command
-                                UIManager.instance.ShowWindow(UIWindow.Command, (int)UIWnd_Cmd.Attack);
+                                UIManager.instance.ShowWindow(UIWindow.InGame_Command, (int)UIWnd_Cmd.Attack);
                             }
                             else if( tile.isSelecteable )
                             {
                                 // move command
-                                UIManager.instance.ShowWindow(UIWindow.Command, (int)UIWnd_Cmd.Move);
+                                UIManager.instance.ShowWindow(UIWindow.InGame_Command, (int)UIWnd_Cmd.Move);
                             }
                             else
                             {
-                                UIManager.instance.CloseWindow(UIWindow.Command);
+                                UIManager.instance.CloseWindow(UIWindow.InGame_Command);
                             }
                         }
                     }
@@ -298,12 +305,12 @@ namespace JGame
         protected void State_WaitCmd_End(Controller.State NextState)
         {
             // update hero status ui
-            UIManager.instance.SetSelection(UIWindow.Status_Hero, null);
+            UIManager.instance.SetSelection(UIWindow.InGame_Status_Hero, null);
 
             // enable all tile
             Map.instance.EnableAllTiles();
 
-            UIManager.instance.CloseWindow(UIWindow.Command);
+            UIManager.instance.CloseWindow(UIWindow.InGame_Command);
         }
         #endregion
 
@@ -380,12 +387,72 @@ namespace JGame
         }
         #endregion
 
+        #region State_Attack
+        protected void State_Attack_Begin(Controller.State PrevState)
+        {
+            GameManager.instance.cameraInput.SetLockCameraInput(true);
+            UIManager.instance.CloseHUD(UIHUD.InGame_Normal);
+        }
+
+        protected IEnumerator BattelOpening()
+        {
+            var camPosition = Camera.main.transform.position;
+            var dir = new Vector3(1, 0, 0);
+            float curT = 0.0f;
+            float maxT = 0.0f;
+            float x = Config.CamWidth;
+
+            // opening
+            UIManager_InGame hud = (UIManager_InGame)UIManager.instance;
+
+            hud.BattlePanel.SetActive(true);
+
+            curT = 0.0f;
+            maxT = hud.BattlePanel.activateAnimTime;
+            while (curT < maxT)
+            {
+                Camera.main.transform.position = camPosition + (dir * x * Mathf.Min(1.0f, curT / maxT));
+                curT += Time.deltaTime;
+                yield return null;
+            }
+
+            yield return new WaitForSeconds(1.0f);
+
+            // closing
+            hud.BattlePanel.SetActive(false);
+            curT = 0.0f;
+            maxT = hud.BattlePanel.deactivateAnimTime;
+            while (curT < maxT)
+            {
+                curT += Time.deltaTime;
+                yield return null;
+            }
+        }
+
+        protected IEnumerator State_Attack()
+        {
+            // Opening
+            IEnumerator e = BattelOpening();
+
+            while( e.MoveNext() )
+            {
+                yield return e.Current;
+            }
+        }
+
+        protected void State_Attack_End(Controller.State NextState)
+        {
+            GameManager.instance.cameraInput.SetLockCameraInput(false);
+            UIManager.instance.CloseHUD(UIHUD.InGame_Battle);
+            UIManager.instance.ShowHUD(UIHUD.InGame_Normal);
+        }
+        #endregion
+
         #region State_EndTurn
         protected void State_EndTurn_Begin(Controller.State PrevState)
         {
             _isTurnEnded = true;
         }
-
         protected IEnumerator State_EndTurn()
         {
             yield return null;
@@ -497,11 +564,11 @@ namespace JGame
         // set selected object. 
         public void SetSelectedObject( GameObject obj )
         {
-            if ( selectedObj == obj || (lockSelect && obj != null) ) return;
+            if ( selectedObj == obj ) return;
 
             selectedObj = obj;
 
-            UIManager.instance.SetSelection(UIWindow.Status_Selected, selectedObj);
+            UIManager.instance.SetSelection(UIWindow.InGame_Status_Selected, selectedObj);
 
             if ( selectedObj != null && arlramObj != null)
             {

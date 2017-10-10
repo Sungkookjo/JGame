@@ -6,6 +6,8 @@ namespace JGame
 {
     public class CameraInput : MonoBehaviour
     {
+        protected bool bLockInput = false;
+
         // camera size min max. only Orthographic
         public Vector2 sizeRange = new Vector2(2.0f, 7.0f);
         // cam move area. top/bottom position ( world position )
@@ -27,6 +29,9 @@ namespace JGame
         // process move
         public bool ProcessInput()
         {
+            if (bLockInput)
+                return false;
+
             // check scale input
             if ( IsScaleInput() )
             {
@@ -97,7 +102,12 @@ namespace JGame
             return JInputManager.GetResizingDelta();
         }
 
-#region Clamp
+        public void SetLockCameraInput(bool bLock)
+        {
+            bLockInput = bLock;
+        }
+
+        #region Clamp
         // Clamp
         protected Vector3 ClampPos(Vector3 pos)
         {
