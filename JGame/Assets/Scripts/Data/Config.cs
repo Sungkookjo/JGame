@@ -26,9 +26,7 @@ namespace JGame
         // system option
         public const float ResX = 1920.0f;
         public const float ResY = 1080.0f;
-
-        public const float CamWidth = -17.0f;
-
+        
         public const float defaultResXY = ResX / ResY;
         public const float defaultResYX = ResY / ResX;
 

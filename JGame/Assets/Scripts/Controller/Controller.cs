@@ -396,22 +396,22 @@ namespace JGame
 
         protected IEnumerator BattelOpening()
         {
-            var camPosition = Camera.main.transform.position;
-            var dir = new Vector3(1, 0, 0);
             float curT = 0.0f;
             float maxT = 0.0f;
-            float x = Config.CamWidth;
 
             // opening
             UIManager_InGame hud = (UIManager_InGame)UIManager.instance;
 
             hud.BattlePanel.SetActive(true);
-
+            
             curT = 0.0f;
             maxT = hud.BattlePanel.activateAnimTime;
+            Rect camRect = Camera.main.rect;
+
             while (curT < maxT)
             {
-                Camera.main.transform.position = camPosition + (dir * x * Mathf.Min(1.0f, curT / maxT));
+                camRect.x = Mathf.Min(1.0f, curT / maxT);
+                Camera.main.rect = camRect;
                 curT += Time.deltaTime;
                 yield return null;
             }
@@ -427,6 +427,9 @@ namespace JGame
                 curT += Time.deltaTime;
                 yield return null;
             }
+
+            camRect.x = 0;
+            Camera.main.rect = camRect;
         }
 
         protected IEnumerator State_Attack()
