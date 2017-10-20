@@ -406,7 +406,13 @@ namespace JGame
             }
 
             GameManager.instance.BeginBattle(attacker, defender);
+
+            // set ui
+            UIManager.instance.ShowHUD(UIHUD.InGame_Battle);
             UIManager.instance.CloseHUD(UIHUD.InGame_Normal);
+
+            UIManager.instance.SetSelection(UIWindow.InGame_Status_Attacker, attacker.gameObject );
+            UIManager.instance.SetSelection(UIWindow.InGame_Status_Defender, defender.gameObject );
             
         }
 

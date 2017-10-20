@@ -16,11 +16,14 @@ namespace JGame
         public UIPanel_Ingame_Command commandMenu;
         public UIPanel_Ingame_SelectStatus selectedObjStat;
         public UIPanel_Ingame_SelectStatus curHeroStat;
-        public UIPanel BattlePanel;
+        public UIPanel_Ingame_SelectStatus attackerStat;
+        public UIPanel_Ingame_SelectStatus defenderStat;
 
         // Use this for initialization
         void Start()
         {
+            CloseHUD(UIHUD.InGame_Battle);
+            CloseHUD(UIHUD.InGame_Normal);
         }
 
         // Update is called once per frame
@@ -101,6 +104,18 @@ namespace JGame
                     if (selectedObjStat != null)
                     {
                         selectedObjStat.SetSelection(selection);
+                    }
+                    break;
+                case UIWindow.InGame_Status_Attacker:
+                    if( attackerStat != null )
+                    {
+                        attackerStat.SetSelection(selection);
+                    }
+                    break;
+                case UIWindow.InGame_Status_Defender:
+                    if( defenderStat != null )
+                    {
+                        defenderStat.SetSelection(selection);
                     }
                     break;
                 default:

@@ -7,6 +7,7 @@ namespace JGame
 {
     public class UIPanel_Ingame_SelectStatus : UIPanel
     {
+        public bool isHiddenStart = true;
         public Text txtName;
         public UIPanel_3x3 cell3x3 = null;
         GameObject selection;
@@ -56,7 +57,11 @@ namespace JGame
         protected override void InitFromStart()
         {
             base.InitFromStart();
-            SetActive(false,true);
+
+            if (isHiddenStart)
+            {
+                SetActive(false, true);
+            }
         }
     }
 }

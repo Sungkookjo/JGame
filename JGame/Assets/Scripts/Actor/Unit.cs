@@ -12,7 +12,8 @@ namespace JGame
 
         // health
         public int health = 0;
-        protected int healthMax = 0;
+        protected int _healthMax = 0;
+        public int healthMax { get { return _healthMax; } }
 
         // attribute
         public int attack = 0;
@@ -20,7 +21,7 @@ namespace JGame
 
         private void Awake()
         {
-            healthMax = health;
+            _healthMax = health;
         }
     }
 }

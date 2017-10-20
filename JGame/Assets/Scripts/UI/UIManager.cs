@@ -9,6 +9,8 @@ namespace JGame
         InGame_Command,
         InGame_Status_Selected,
         InGame_Status_Hero,
+        InGame_Status_Attacker,
+        InGame_Status_Defender,
     }
 
     public enum UIHUD

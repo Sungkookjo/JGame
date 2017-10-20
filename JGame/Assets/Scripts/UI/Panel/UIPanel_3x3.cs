@@ -49,6 +49,15 @@ namespace JGame
             txt.text = lvl.ToString();
         }
 
+        protected void SetCellHealth(int idx, float pct )
+        {
+            var child = transform.GetChild(idx);
+            var obj = child.GetChild(0).GetChild(1).GetChild(0).gameObject;
+
+            var rect = obj.transform as RectTransform;
+            rect.anchorMax = new Vector2(pct, 1.0f);
+        }
+
         public void SetHeroInfo( Hero hero )
         {
             var soldiers = hero.GetSoldiers( false );
@@ -67,6 +76,7 @@ namespace JGame
                     SetActiveCell(i,true);
                     SetCellIcon(i, soldier.iconImg);
                     SetCellLevel(i, soldier.level);
+                    SetCellHealth(i, soldier.health / (float)soldier.healthMax);
                 }
                 else
                 {

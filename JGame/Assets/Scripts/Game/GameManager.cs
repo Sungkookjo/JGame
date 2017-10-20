@@ -224,12 +224,14 @@ namespace JGame
         }
 
         IEnumerator StartGame()
-        {
+        {            
             yield return null;
             yield return new WaitForSeconds(1.0f);
             yield return new WaitForSeconds(1.0f);
             yield return new WaitForSeconds(1.0f);
             SetState(GameState.Play);
+            
+            UIManager.instance.ShowHUD(UIHUD.InGame_Normal);
         }
 
         IEnumerator PlayState()
@@ -468,7 +470,7 @@ namespace JGame
             cachedDefender = defender;
 
             BattleCamera.gameObject.SetActive(true);
-            FieldCamera.gameObject.SetActive(false);            
+            FieldCamera.gameObject.SetActive(false);
 
             cachedAttacker.SetBattleMode(BattleCamera.transform.position + new Vector3(-1.0f, 0, 0), true);
             cachedDefender.SetBattleMode(BattleCamera.transform.position + new Vector3(1.0f,0,0), false);
@@ -492,7 +494,7 @@ namespace JGame
         #region Command
         public void Command_Attack()
         {
-            if (controller != null)
+            if (controller != null && controller.CanAttackSelection() )
             {
                 controller.SetState(Controller.State.Attack);
             }

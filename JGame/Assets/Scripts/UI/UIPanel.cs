@@ -280,5 +280,10 @@ namespace JGame
                 yield return null;
             }            
         }
+
+        private void OnDisable()
+        {
+            _isActive = false;
+        }
     }
 }
