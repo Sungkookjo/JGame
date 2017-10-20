@@ -71,7 +71,7 @@ namespace JGame.Data
         protected void Initialize()
         {
             //@Test
-            PlayerPrefs.DeleteAll();
+            //PlayerPrefs.DeleteAll();
 
             if (IsFirstExcute())
             {

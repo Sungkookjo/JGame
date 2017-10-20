@@ -18,33 +18,52 @@ namespace JGame
         public string mapPath;
     }
 
+    public enum GameState
+    {
+        None,
+        Init,
+        Start,
+        Play,
+        Over,
+    }
+    
     public class GameManager : MonoBehaviour
     {
-        public CameraInput cameraInput;
+#region Camera
+        public Camera FieldCamera;
+        public Camera BattleCamera;
+        public CameraInput cameraInput; // field camera input
+        #endregion
+
+        protected Hero cachedAttacker;
+        protected Hero cachedDefender;
 
         GameInfo gameInfo = null;
-
+        GameState _state;
         public Map map;
 
+        #region controller
         // all controllers
         protected List<Controller> allController = new List<Controller>();
+        // current turn controller 
+        Controller controller = null;
+        // local user controller
+        Controller _localController = null;
+        public Controller localController { get { return _localController; } }
+        #endregion
+
         // current turn controller index
         public int curTurn = 0;
 
         // all teams
         List<Team> teams = new List<Team>();
 
-        // current turn controller 
-        Controller controller = null;
-
-        // local user controller
-        Controller _localController = null;
-
-        public Controller localController {  get { return _localController; } }
-
         // is Initialized?
         public bool isInitialized = false;
 
+        IEnumerator coroutine_Update = null;
+
+        #region instance
         // instance
         private static GameManager _instance = null;
         public static GameManager instance
@@ -57,6 +76,7 @@ namespace JGame
                 return _instance;
             }
         }
+        #endregion
 
         // Awake
         private void Awake()
@@ -66,20 +86,54 @@ namespace JGame
                 _instance = this;
             }
 
-            StartCoroutine(InitializeGame());
+            SetState(GameState.Init);
+        }
+
+        public void SetState(GameState state)
+        {
+            if (state == _state) return;
+
+            if (_state == GameState.Init && isInitialized == false ) return;
+
+            _state = state;
+
+            switch (_state)
+            {
+                case GameState.Init:
+                    coroutine_Update = InitializeGame();
+                    break;
+                case GameState.Start:
+                    coroutine_Update = StartGame();
+                    break;
+                case GameState.Play:
+                    coroutine_Update = PlayState();
+                    break;
+                case GameState.Over:
+                    coroutine_Update = EndGame();
+                    break;
+            }        
         }
 
         private void OnDestroy()
         {
             if (_instance == this)
                 _instance = null;
+            
+            coroutine_Update = null;
         }
 
         private void Start()
         {
             if(cameraInput == null )
             {
-                cameraInput = JUtil.FindComponent<CameraInput>("Camera");
+                if (FieldCamera != null)
+                {
+                    cameraInput = FieldCamera.GetComponent<CameraInput>();
+                }
+                else
+                {
+                    cameraInput = JUtil.FindComponent<CameraInput>("Camera");
+                }
             }
 
             StartCoroutine(UpdateGame());
@@ -108,9 +162,18 @@ namespace JGame
             }
         }
 
+#region State
         // Initialize Game
         IEnumerator InitializeGame()
         {
+            yield return null;
+
+            // wait data controller initialize
+            while (!DataController.instance.isReady)
+            {
+                yield return null;
+            }
+
             // {{ @ Test
             if (gameInfo == null )
             {
@@ -157,7 +220,62 @@ namespace JGame
 
             isInitialized = true;
             yield return null;
+            SetState(GameState.Start);
         }
+
+        IEnumerator StartGame()
+        {
+            yield return null;
+            yield return new WaitForSeconds(1.0f);
+            yield return new WaitForSeconds(1.0f);
+            yield return new WaitForSeconds(1.0f);
+            SetState(GameState.Play);
+        }
+
+        IEnumerator PlayState()
+        {
+            yield return null;
+
+            curTurn = -1;
+
+            while (true)
+            {
+                // get next turn controller
+                controller = GetNextTurnController();
+
+                // set controller auto
+                controller.isAuto = IsAuto(controller);
+
+                // begin turn
+                controller.BeginTurn();
+                yield return null;
+
+                // update turn
+                IEnumerator e = controller.CalcTurn();
+                while (e.MoveNext())
+                {
+                    yield return e.Current;
+                }
+
+                // end turn
+                controller.EndTurn();
+                yield return new WaitForSeconds(0.5f);
+
+                // game over?
+                if (CheckGameOver())
+                {
+                    SetState(GameState.Over);
+                    yield break;
+                }
+                yield return null;
+            }
+        }
+
+        IEnumerator EndGame()
+        {
+            yield return null;
+        }     
+        #endregion
 
         // create new controller
         protected Controller CreateController( int teamIndex)
@@ -265,52 +383,16 @@ namespace JGame
         // Game Update
         IEnumerator UpdateGame()
         {
-            // wait data controller initialize
-            while( !DataController.instance.isReady )
+            while( true )
             {
-                yield return null;
-            }
-
-            //yield return new WaitForSeconds(0.1f);
-
-            // wait initialize
-            while( !isInitialized )
-            {
-                yield return null;
-            }
-
-            yield return new WaitForSeconds(0.1f);
-
-            curTurn = -1;
-
-            while ( true )
-            {
-                // get next turn controller
-                controller = GetNextTurnController();
-
-                // set controller auto
-                controller.isAuto = IsAuto( controller );
-
-                // begin turn
-                controller.BeginTurn();
-                yield return null;
-
-                // update turn
-                IEnumerator e = controller.CalcTurn();                
-                while (e.MoveNext())
+                if( coroutine_Update != null )
                 {
-                    yield return e.Current;
+                    while( coroutine_Update.MoveNext() )
+                    {
+                        yield return coroutine_Update.Current;
+                    }
                 }
 
-                // end turn
-                controller.EndTurn();
-                yield return new WaitForSeconds( 0.5f );
-
-                // game over?
-                if ( CheckGameOver() )
-                {
-                    yield break;
-                }
                 yield return null;
             }
         }
@@ -373,6 +455,37 @@ namespace JGame
         public void Surrender()
         {
             JUtil.LoadScene(Config.Scene.MainMenu);
+        }
+
+        public void BeginBattle( Hero attacker , Hero defender )
+        {
+            if (cameraInput != null)
+            {
+                cameraInput.SetLockCameraInput(true);
+            }
+
+            cachedAttacker = attacker;
+            cachedDefender = defender;
+
+            BattleCamera.gameObject.SetActive(true);
+            FieldCamera.gameObject.SetActive(false);            
+
+            cachedAttacker.SetBattleMode(BattleCamera.transform.position + new Vector3(-1.0f, 0, 0), true);
+            cachedDefender.SetBattleMode(BattleCamera.transform.position + new Vector3(1.0f,0,0), false);
+        }
+
+        public void EndBattle()
+        {
+            FieldCamera.gameObject.SetActive(true);
+            BattleCamera.gameObject.SetActive(false);
+            
+            cachedAttacker.SetFieldMode();
+            cachedDefender.SetFieldMode();
+
+            if (cameraInput != null)
+            {
+                cameraInput.SetLockCameraInput(false);
+            }
         }
 
         #region UI->GameManager

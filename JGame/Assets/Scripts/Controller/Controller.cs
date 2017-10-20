@@ -390,62 +390,36 @@ namespace JGame
         #region State_Attack
         protected void State_Attack_Begin(Controller.State PrevState)
         {
-            GameManager.instance.cameraInput.SetLockCameraInput(true);
+            Hero attacker, defender;
+
+            attacker = curHero;
+            defender = selectedObj.GetComponent<Hero>();
+
+            if( defender == null )
+            {
+                var tile = selectedObj.GetComponent<Tile>();
+
+                if (tile != null && tile.actor != null)
+                {
+                    defender = tile.actor.GetComponent<Hero>();
+                }
+            }
+
+            GameManager.instance.BeginBattle(attacker, defender);
             UIManager.instance.CloseHUD(UIHUD.InGame_Normal);
-        }
-
-        protected IEnumerator BattelOpening()
-        {
-            float curT = 0.0f;
-            float maxT = 0.0f;
-
-            // opening
-            UIManager_InGame hud = (UIManager_InGame)UIManager.instance;
-
-            hud.BattlePanel.SetActive(true);
             
-            curT = 0.0f;
-            maxT = hud.BattlePanel.activateAnimTime;
-            Rect camRect = Camera.main.rect;
-
-            while (curT < maxT)
-            {
-                camRect.x = Mathf.Min(1.0f, curT / maxT);
-                Camera.main.rect = camRect;
-                curT += Time.deltaTime;
-                yield return null;
-            }
-
-            yield return new WaitForSeconds(1.0f);
-
-            // closing
-            hud.BattlePanel.SetActive(false);
-            curT = 0.0f;
-            maxT = hud.BattlePanel.deactivateAnimTime;
-            while (curT < maxT)
-            {
-                curT += Time.deltaTime;
-                yield return null;
-            }
-
-            camRect.x = 0;
-            Camera.main.rect = camRect;
         }
 
         protected IEnumerator State_Attack()
         {
-            // Opening
-            IEnumerator e = BattelOpening();
+            yield return null;
 
-            while( e.MoveNext() )
-            {
-                yield return e.Current;
-            }
+            yield return new WaitForSeconds(5.0f);
         }
 
         protected void State_Attack_End(Controller.State NextState)
         {
-            GameManager.instance.cameraInput.SetLockCameraInput(false);
+            GameManager.instance.EndBattle();
             UIManager.instance.CloseHUD(UIHUD.InGame_Battle);
             UIManager.instance.ShowHUD(UIHUD.InGame_Normal);
         }

@@ -124,7 +124,7 @@ namespace JGame
 
         public Vector3 GetMemberPosition(int x, int y)
         {
-            var pos = Map.instance.GetTile(position).transform.position;
+            var pos = owner.transform.position;
             pos += Map.instance.tileSpacingX * 0.3f * (x - 1);
             pos += Map.instance.tileSpacingY * 0.3f * (y - 1);
 
@@ -213,6 +213,40 @@ namespace JGame
             }
 
             return true;
+        }
+
+        public void SetBattleMode(Vector3 loc, bool isAttacker)
+        {
+            var scale = new Vector3(1, 1, 1);
+            var offset = new Vector3(0, 0, 0);
+
+            if ( isAttacker == false )
+            {
+                scale.x = -1.0f;
+            }
+            else
+            {
+                for(int x=0;x<3;++x)
+                {
+                    for(int y=0;y<3;++y)
+                    {
+                        formation[x+ (y*3)] = members[((2-x)*3)+ y];
+                    }
+                }
+            }
+
+            for (int i = 0; i < formation.Length; ++i)
+            {
+                if (formation[i] != null)
+                {
+                    offset.x = ((i % 3) - 1) * 0.5f;
+                    offset.y = ((i / 3) - 1) * -0.5f;
+                    offset.z = offset.y * 0.1f;
+                    formation[i].transform.position = loc + offset;
+                    formation[i].transform.localScale = scale;
+                    formation[i].transform.rotation = Quaternion.identity;
+                }
+            }
         }
     }
 }

@@ -44,7 +44,19 @@ namespace JGame.Sound
                 obj.name = "Sound Manager";
                 _instance = obj.AddComponent<SoundManager>();
                 _instance.Initialize();
-                DontDestroyOnLoad(obj);
+            }
+        }
+
+        private void Awake()
+        {
+            if (_instance == null)
+            {
+                _instance = this;
+                Initialize();
+            }
+            else if( _instance != this )
+            {
+                Destroy(gameObject);
             }
         }
 
@@ -55,6 +67,8 @@ namespace JGame.Sound
             {
                 SetVolume(type, DataController.instance.GetFloatData( VolumeTypeToKey(type) , 1.0f));
             }
+
+            DontDestroyOnLoad(gameObject);
         }
 
         public string VolumeTypeToKey( SoundType type )

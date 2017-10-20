@@ -193,5 +193,22 @@ namespace JGame
         {
             return squad.CanMoveToTile(tile);
         }
+
+        public void SetBattleMode( Vector3 loc, bool isAttacker )
+        {
+            loc.z = 0.0f;
+            transform.position = loc;
+
+            squad.SetBattleMode(loc, isAttacker);
+        }
+
+        public void SetFieldMode()
+        {
+            transform.position = Map.instance.GetTile(position.x, position.y).transform.position;
+            
+            squad.UpdateSquadFormation();
+            squad.UpdateMembersRotation();
+            squad.UpdateMembersPosition();
+        }
     }
 }
